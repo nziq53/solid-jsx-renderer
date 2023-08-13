@@ -36,7 +36,7 @@ See here for detailed instructions.
 
 ## Installation
 
-1. `npm install @oligami/solid-jsx-renderer` (or `yarn add @oligami/solid-jsx-renderer`)
+1. `npm install @oligami/solid-jsx-renderer` (or `pnpm add @oligami/solid-jsx-renderer`)
 2. Add `import { JSXRenderer } from 'solid-jsx-renderer';`
 3. `<JSXRenderer code="Hello, World" />` to render `Hello, World`
 
