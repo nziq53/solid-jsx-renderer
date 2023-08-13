@@ -29,7 +29,7 @@
     "forceConsistentCasingInFileNames": true
   },
   "include": [
-    "examples/src",
+    "examples/solidjs",
     "src/**/*"
   ],
   "exclude": [

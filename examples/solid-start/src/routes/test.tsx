@@ -31,7 +31,10 @@ function DisplayText(props: { text: string }) {
 }
 
 function App() {
-  const [inputText, setInputText] = createSignal(`
+  const [inputText, setInputText] = createSignal('')
+
+  setTimeout(() => {
+    setInputText(`
 <>
 <div>
   <p>code here: https://github.com/oligami-0424/solid-jsx-renderer</p>
@@ -51,6 +54,7 @@ function App() {
 <DisplayText text={inputText()} />
 </>  
     `)
+  }, 1000)
 
   return (
     <>

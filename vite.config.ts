@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
 import solidPlugin from 'vite-plugin-solid'
+import solid from 'solid-start/vite'
 
 import { resolve } from 'path'
 
@@ -13,16 +14,18 @@ export default defineConfig({
       formats: ['es', 'umd'],
     },
     rollupOptions: {
-      external: ['solid-js'],
+      external: ['solid-js', 'solid-start'],
       output: {
         globals: {
-          'solid-js': 'solid-js'
+          'solid-js': 'solid-js',
+          'solid-start': 'solid-start'
         }
       }
     }
   },
   plugins: [
-    solidPlugin()
+    solidPlugin(),
+    solid()
   ],
   optimizeDeps: {
     exclude: ['solid-jsx-renderer']
