@@ -7,9 +7,10 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build",
     "preview": "vite preview",
-    "build:examples": "cd examples && vite build --outDir ../docs"
+    "build:examples": "rm -rf docs && vite build examples --outDir ../docs",
+    "preview:examples": "vite preview --outDir docs"
   },
   "keywords": [],
   "author": "",
@@ -19,7 +20,7 @@
   ],
   "dependencies": {
     "meriyah": "~4.3.7",
-    "solid-js": "^1.7.11"
+    "solid-js": ">=1.7.11"
   },
   "devDependencies": {
     "@types/node": "^20.4.10",

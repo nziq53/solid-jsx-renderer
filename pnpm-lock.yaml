@@ -9,7 +9,7 @@ dependencies:
     specifier: ~4.3.7
     version: 4.3.7
   solid-js:
-    specifier: ^1.7.11
+    specifier: '>=1.7.11'
     version: 1.7.11
 
 devDependencies:
