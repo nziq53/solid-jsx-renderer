@@ -18,7 +18,7 @@
     "url": "git+https://github.com/oligami-0424/solid-jsx-renderer.git"
   },
   "license": "MIT",
-  "author": "Onishi Akira <nziq53@gmail.com>",
+  "author": "Akira Onishi <nziq53@gmail.com>",
   "sideEffects": false,
   "type": "module",
   "exports": {
@@ -44,7 +44,7 @@
     "dev": "vite",
     "build": "rollup -c",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
-    "build:examples": "rm -rf docs && vite build examples/solidjs --outDir ../docs",
+    "build:examples": "rm -rf docs && vite build examples/solidjs --outDir ../../docs",
     "preview": "vite preview",
     "preview:examples": "vite preview --outDir docs",
     "prepare": "pnpm build"
