@@ -1,18 +1,14 @@
 {
   "name": "@oligami/solid-jsx-renderer",
+  "version": "0.2.20",
   "private": false,
-  "version": "0.2.17",
-  "type": "module",
   "description": "A Solidjs Component for Rendering JSX",
-  "source": [
-    "./docs/index.html"
+  "keywords": [
+    "solid",
+    "solidjs",
+    "jsx",
+    "renderer"
   ],
-  "targets": {
-    "doc": {},
-    "main": false,
-    "module": false,
-    "types": false
-  },
   "homepage": "https://github.com/oligami-0424/solid-jsx-renderer",
   "bugs": {
     "url": "https://github.com/oligami-0424/solid-jsx-renderer/issues"
@@ -21,11 +17,10 @@
     "type": "git",
     "url": "git+https://github.com/oligami-0424/solid-jsx-renderer.git"
   },
-  "keywords": [
-    "solidjs",
-    "jsx",
-    "renderer"
-  ],
+  "license": "MIT",
+  "author": "Onishi Akira <nziq53@gmail.com>",
+  "sideEffects": false,
+  "type": "module",
   "exports": {
     ".": {
       "types": "./dist/types/index.d.ts",
@@ -42,24 +37,24 @@
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
   "types": "dist/types/index.d.ts",
-  "typings": "dist/types/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "rollup -c",
+    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
     "build:examples": "rm -rf docs && vite build examples/solidjs --outDir ../docs",
     "preview": "vite preview",
     "preview:examples": "vite preview --outDir docs",
     "prepare": "pnpm build"
   },
-  "author": "Onishi Akira <nziq53@gmail.com>",
-  "sideEffects": false,
-  "license": "MIT",
-  "files": [
-    "dist/**/*.{js,umd.cjs,d.ts,map,jsx}"
-  ],
   "dependencies": {
-    "meriyah": "latest"
+    "meriyah": ">=4.3.7"
   },
+  "source": [
+    "./docs/index.html"
+  ],
   "devDependencies": {
     "@types/node": "^20.4.10",
     "rollup": "^3.28.0",
@@ -68,13 +63,12 @@
     "typescript": "^5.1.6",
     "vite": "^4.4.9",
     "vite-plugin-solid": "^2.7.0",
-    "solid-js": "latest"
+    "solid-js": ">=1.7.11"
   },
   "peerDependencies": {
-    "solid-js": "latest"
+    "solid-js": ">=1.7.11"
   },
   "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org/"
+    "access": "public"
   }
 }
