@@ -17,6 +17,7 @@ It has a JavaScript Runtime inside, and can execute the user's JSX with controll
 - [x] Pass binding variables
 - [ ] Applicable filters to parsed nodes
   - You can create allowlist / denylist filters to tagName, attributes or properties
+  - Operation has not been checked.
 - [x] Avoid user's call expressions
 - [x] Avoid user's new expressions
 - [x] Parse with meriyah
