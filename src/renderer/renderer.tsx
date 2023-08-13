@@ -66,8 +66,8 @@ const DefaultJSXFallbackComponent: JSXFallbackComponent = (props: { error?: any;
 
 const JSXRenderer = ((props: JSXRendererProps) => {
   const contextOptions = useContext(JSXRendererContext);
-  const [code, fallbackComponent, refNodes, component, componentProps, options] = splitProps(mergeProps(contextOptions, props), ['code'], ['fallbackComponent'], ['refNodes'], ['component'], ['componentProps'])
-  const Fallback = fallbackComponent.fallbackComponent ? fallbackComponent.fallbackComponent : DefaultJSXFallbackComponent;
+  const [thisprop, options] = splitProps(mergeProps(contextOptions, props), ['code', 'fallbackComponent', 'refNodes', 'component', 'componentProps'])
+  const Fallback = thisprop.fallbackComponent ? thisprop.fallbackComponent : DefaultJSXFallbackComponent;
 
   props.debug && console.group('JSXRenderer');
 
@@ -76,28 +76,29 @@ const JSXRenderer = ((props: JSXRendererProps) => {
     error?: Error
   }> = createMemo(() => {
     try {
-      const program = parse(code.code || '', { meriyah: props.meriyah, debug: props.debug, forceExpression: !component.component });
+      const program = parse(thisprop.code || '', { meriyah: props.meriyah, debug: props.debug, forceExpression: !thisprop.component });
       return { program, error: undefined };
     } catch (e) {
-      const error = e as Error;
-      return { program: undefined, error };
+      const error = e;
+      if (error instanceof Error)
+        return { program: undefined, error };
+      return { program: undefined, error: undefined }
     }
-  });
+  }, [thisprop.code, props.meriyah, props.debug, thisprop.component]);
 
   createEffect(() => {
-    if (typeof refNodes.refNodes === 'function') refNodes.refNodes(nodes);
+    if (typeof thisprop.refNodes === 'function') thisprop.refNodes(nodes);
   });
-
 
   const programToNodes = (prog: {
     program?: ESTree.Program;
     error?: Error;
   }): JSXNode[] | undefined => {
     if (prog.program) {
-      if (component.component) {
+      if (thisprop.component) {
         const context = evaluate(prog.program, options);
-        if (typeof context.exports[component.component] === 'function') {
-          return [{ type: 'element', component: context.exports[component.component], props: componentProps.componentProps || {}, children: [] }]
+        if (typeof context.exports[thisprop.component] === 'function') {
+          return [{ type: 'element', component: context.exports[thisprop.component], props: thisprop.componentProps || {}, children: [] }]
         } else {
           return []
         }

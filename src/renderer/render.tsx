@@ -2,7 +2,7 @@ import { ESTree } from 'meriyah';
 import { JSXElement, JSXFragment, JSXNode, JSXText } from '../types';
 import { isUnknownHTMLElementTagName } from './isUnknownElementTagName';
 import { RenderingOptions } from './options';
-import { For, JSX, mergeProps } from 'solid-js';
+import { For, mergeProps } from 'solid-js';
 import { Dynamic } from "solid-js/web";
 
 const fileName = 'jsx';
@@ -31,22 +31,22 @@ const RenderJSXText = (props: { text: JSXText, options: RenderingOptions }) => {
   return applyFilter(props.options.textFilters || [], props.text);
 };
 
-const RenderJSXNode = (props: { node: JSXElement | JSXFragment, options: RenderingOptions }): JSX.Element => {
+const RenderJSXNode = (props: { node: JSXElement | JSXFragment, options: RenderingOptions }) => {
   switch (props.node.type) {
     case 'element':
-      return renderJSXElement(props.node, props.options);
+      return <RenderJSXElement element={props.node} options={props.options} />;
     case 'fragment':
-      return renderJSXFragment(props.node, props.options);
+      return <RenderJSXFragment fragment={props.node} options={props.options} />
   }
 };
 
-const renderJSXElement = (element: JSXElement, options: RenderingOptions): JSX.Element => {
-  const filtered = applyFilter(options.elementFilters || [], element);
+const RenderJSXElement = (props: { element: JSXElement, options: RenderingOptions }) => {
+  const filtered = applyFilter(props.options.elementFilters || [], props.element);
   if (!filtered) return undefined;
 
-  if (options.disableUnknownHTMLElement && typeof filtered.component === 'string') {
+  if (props.options.disableUnknownHTMLElement && typeof filtered.component === 'string') {
     const { component } = filtered;
-    const checker = options.isUnknownHTMLElementTagName || isUnknownHTMLElementTagName;
+    const checker = props.options.isUnknownHTMLElementTagName || isUnknownHTMLElementTagName;
     if (checker(component)) return undefined;
   }
 
@@ -65,27 +65,27 @@ const renderJSXElement = (element: JSXElement, options: RenderingOptions): JSX.E
   //   )
   // }
 
-  let move_props = mergeProps(filtered.props, renderSourcePosition(element.loc, options))
+  let move_props = mergeProps(filtered.props, renderSourcePosition(props.element.loc, props.options))
   return (
     <Dynamic component={filtered.component} {...move_props}>
       <For each={filtered.children}>{(child, _i) =>
-        <RenderJSX node={child} options={options} />
+        <RenderJSX node={child} options={props.options} />
       }</For>
     </Dynamic>
   );
 };
 
-const renderJSXFragment = (fragment: JSXFragment, options: RenderingOptions): JSX.Element => {
-  const filtered = applyFilter(options.fragmentFilters || [], fragment);
+const RenderJSXFragment = (props: { fragment: JSXFragment, options: RenderingOptions }) => {
+  const filtered = applyFilter(props.options.fragmentFilters || [], props.fragment);
 
   if (filtered) {
     return (
       <For each={filtered.children}>{(child, _i) =>
-        <RenderJSX node={child} options={options} />
+        <RenderJSX node={child} options={props.options} />
       }</For>
     )
   } else {
-    return undefined;
+    return <></>;
   }
 };
 

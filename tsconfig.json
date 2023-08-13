@@ -5,10 +5,15 @@
     "module": "ESNext",
     "lib": [
       "ESNext",
+      "dom.iterable",
       "DOM"
     ],
-    "moduleResolution": "node",
-    // "strict": true,
+    "newLine": "lf",
+    "allowJs": false,
+    "baseUrl": "src" /* Specify the base directory to resolve non-relative module names. */,
+    "allowSyntheticDefaultImports": true,
+    "moduleResolution": "Bundler" /* Specify how TypeScript looks up a file from a given module specifier. */,
+    "strict": true,
     "sourceMap": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
@@ -16,7 +21,7 @@
     "isolatedModules": true,
     "declaration": true,
     "declarationMap": true,
-    "declarationDir": "./types",
+    "declarationDir": "./dist",
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
@@ -26,7 +31,13 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "skipDefaultLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "types": [
+      "solid-js",
+      "vite/client",
+      "node"
+    ]
   },
   "include": [
     "examples/solidjs",

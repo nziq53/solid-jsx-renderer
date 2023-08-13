@@ -1,13 +1,9 @@
 {
   "name": "@oligami/solid-jsx-renderer",
   "private": false,
-  "version": "0.2.2",
+  "version": "0.2.17",
   "type": "module",
   "description": "A Solidjs Component for Rendering JSX",
-  "main": "./dist/solid-jsx-renderer.umd.cjs",
-  "module": "./dist/solid-jsx-renderer.js",
-  "types": "./types/src/index.d.ts",
-  "typings": "./types/src/index.d.ts",
   "source": [
     "./docs/index.html"
   ],
@@ -18,9 +14,12 @@
     "types": false
   },
   "homepage": "https://github.com/oligami-0424/solid-jsx-renderer",
+  "bugs": {
+    "url": "https://github.com/oligami-0424/solid-jsx-renderer/issues"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/oligami-0424/solid-jsx-renderer.git"
+    "url": "git+https://github.com/oligami-0424/solid-jsx-renderer.git"
   },
   "keywords": [
     "solidjs",
@@ -29,40 +28,50 @@
   ],
   "exports": {
     ".": {
-      "import": "./dist/solid-jsx-renderer.js",
-      "require": "./dist/solid-jsx-renderer.umd.cjs"
+      "types": "./dist/types/index.d.ts",
+      "solid": "./dist/source/index.jsx",
+      "import": "./dist/esm/index.js",
+      "browser": {
+        "import": "./dist/esm/index.js",
+        "require": "./dist/cjs/index.js"
+      },
+      "require": "./dist/cjs/index.js",
+      "node": "./dist/cjs/index.js"
     }
   },
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/types/index.d.ts",
+  "typings": "dist/types/index.d.ts",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "rollup -c",
     "build:examples": "rm -rf docs && vite build examples/solidjs --outDir ../docs",
     "preview": "vite preview",
     "preview:examples": "vite preview --outDir docs",
     "prepare": "pnpm build"
   },
-  "author": "",
+  "author": "Onishi Akira <nziq53@gmail.com>",
+  "sideEffects": false,
   "license": "MIT",
   "files": [
-    "dist/**/*.{js,umd.cjs}",
-    "src/**/*.{ts,tsx}",
-    "types/src/**/*.{d.ts,map}",
-    "package.json",
-    "vite.config.ts"
+    "dist/**/*.{js,umd.cjs,d.ts,map,jsx}"
   ],
   "dependencies": {
-    "meriyah": "~4.3.7",
-    "solid-js": "^1.7.11",
-    "solid-start": "^0.3.2"
+    "meriyah": "latest"
   },
   "devDependencies": {
     "@types/node": "^20.4.10",
+    "rollup": "^3.28.0",
+    "rollup-preset-solid": "^2.0.1",
+    "tsup": "^7.2.0",
     "typescript": "^5.1.6",
     "vite": "^4.4.9",
-    "vite-plugin-solid": "^2.7.0"
+    "vite-plugin-solid": "^2.7.0",
+    "solid-js": "latest"
   },
   "peerDependencies": {
-    "solid-js": ">=1.7.11"
+    "solid-js": "latest"
   },
   "publishConfig": {
     "access": "public",
