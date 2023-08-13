@@ -50,7 +50,7 @@
     "prepare": "pnpm build"
   },
   "dependencies": {
-    "meriyah": ">=4.3.7"
+    "meriyah": "latest"
   },
   "source": [
     "./docs/index.html"
@@ -59,13 +59,13 @@
     "@types/node": "^20.4.10",
     "rollup": "^3.28.0",
     "rollup-preset-solid": "^2.0.1",
+    "solid-js": "^1.7.11",
     "typescript": "^5.1.6",
     "vite": "^4.4.9",
-    "vite-plugin-solid": "^2.7.0",
-    "solid-js": ">=1.7.11"
+    "vite-plugin-solid": "^2.7.0"
   },
   "peerDependencies": {
-    "solid-js": ">=1.7.11"
+    "solid-js": "latest"
   },
   "publishConfig": {
     "access": "public"
