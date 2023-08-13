@@ -6,7 +6,7 @@ var Gu=Object.defineProperty;var xu=(e,n,u)=>n in e?Gu(e,n,{enumerable:!0,config
   <p>This is a port of the react This is a port of the library of
     <a href="https://github.com/rosylilly/react-jsx-renderer" target="_blank" rel="noopener noreferrer">https://github.com/rosylilly/react-jsx-renderer</a></p>
   <p></p>
-  <p>I'm not sure about package releases, so I'll get to that later.</p>
+  <p> npm package is 「 @oligami/solid-jsx-renderer 」 </p>
   <br />
   <p>by deepl</p>
   <p>author oligami</p>
