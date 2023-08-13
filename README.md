@@ -15,7 +15,7 @@ It has a JavaScript Runtime inside, and can execute the user's JSX with controll
   - without async, await and generator
 - [x] Injectable custom SolidJS components
 - [x] Pass binding variables
-- [?] Applicable filters to parsed nodes
+- [] Applicable filters to parsed nodes
   - You can create allowlist / denylist filters to tagName, attributes or properties
 - [x] Avoid user's call expressions
 - [x] Avoid user's new expressions
