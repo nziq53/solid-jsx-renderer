@@ -38,7 +38,7 @@
   "module": "dist/esm/index.js",
   "types": "dist/types/index.d.ts",
   "files": [
-    "dist"
+    "dist/**/*.{js,umd.cjs,map,d.ts,jsx}"
   ],
   "scripts": {
     "dev": "vite",
@@ -59,7 +59,6 @@
     "@types/node": "^20.4.10",
     "rollup": "^3.28.0",
     "rollup-preset-solid": "^2.0.1",
-    "tsup": "^7.2.0",
     "typescript": "^5.1.6",
     "vite": "^4.4.9",
     "vite-plugin-solid": "^2.7.0",
