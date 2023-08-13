@@ -21,7 +21,7 @@ function TextInput(props: { value: string, onChange: (e: any) => any }) {
 function DisplayText(props: { text: string }) {
   return (
     <div>
-      <p>入力されたテキスト: {props.text}</p>
+      <p>input text: {props.text}</p>
     </div>
   );
 }
@@ -38,6 +38,18 @@ function App() {
 
   return (
     <>
+      <div>{`
+code here: https://github.com/oligami-0424/solid-jsx-renderer
+
+This is a port of the react This is a port of the library of
+https://github.com/rosylilly/react-jsx-renderer
+
+I'm not sure about package releases, so I'll get to that later.
+
+by deepl
+
+author oligami
+  `}</div>
       <div style={{ width: "95vw" }}>
         <TextInput value={inputText()} onChange={(e) => setInputText(e.target.value)} />
         <JSXRenderer
