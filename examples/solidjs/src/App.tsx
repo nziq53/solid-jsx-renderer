@@ -34,7 +34,7 @@ function App() {
   const [inputText, setInputText] = createSignal(`
 <>
 <div>
-  <p>code here: https://github.com/oligami-0424/solid-jsx-renderer</p>
+  <p>code here: <a href="https://github.com/oligami-0424/solid-jsx-renderer" target="_blank" rel="noopener noreferrer">https://github.com/oligami-0424/solid-jsx-renderer</a></p>
   <p>This is a port of the react This is a port of the library of
     <a href="https://github.com/rosylilly/react-jsx-renderer" target="_blank" rel="noopener noreferrer">https://github.com/rosylilly/react-jsx-renderer</a></p>
   <p></p>
