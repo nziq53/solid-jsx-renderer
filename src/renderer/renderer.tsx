@@ -2,8 +2,8 @@ import { ESTree } from 'meriyah';
 import { evaluate, evaluateJSX, EvaluateOptions, parse, ParseOptions } from '../evaluate';
 import { JSXNode } from '../types';
 import { RenderingOptions } from './options';
-import { renderJSX } from './render';
-import { Accessor, createContext, createEffect, createMemo, JSX, mergeProps, on, Ref, Show, splitProps, useContext } from 'solid-js';
+import { RenderJSX } from './render';
+import { Accessor, createContext, createEffect, createMemo, For, JSX, mergeProps, on, Ref, Show, splitProps, useContext } from 'solid-js';
 import { createStore, reconcile } from 'solid-js/store';
 
 export interface JSXNodeRendererProps extends RenderingOptions {
@@ -14,10 +14,15 @@ export interface JSXNodeRendererProps extends RenderingOptions {
 }
 
 const JSXNodeRenderer = (props: JSXNodeRendererProps) => {
+
   const contextOptions = useContext(JSXRendererContext);
   const [nodes, options] = splitProps(mergeProps(contextOptions, props), ['nodes']);
 
-  return <>{nodes.nodes.map((node: JSXNode | JSXNode[]) => renderJSX(node, options))}</>;
+  return <>
+    <For each={nodes.nodes}>{(node, _i) =>
+      <RenderJSX node={node} options={options} />
+    }</For>
+  </>;
 };
 
 export { JSXNodeRenderer };
@@ -64,7 +69,6 @@ const JSXRenderer = ((props: JSXRendererProps) => {
   const [code, fallbackComponent, refNodes, component, componentProps, options] = splitProps(mergeProps(contextOptions, props), ['code'], ['fallbackComponent'], ['refNodes'], ['component'], ['componentProps'])
   const Fallback = fallbackComponent.fallbackComponent ? fallbackComponent.fallbackComponent : DefaultJSXFallbackComponent;
 
-
   props.debug && console.group('JSXRenderer');
 
   const program: Accessor<{
@@ -87,6 +91,7 @@ const JSXRenderer = ((props: JSXRendererProps) => {
   const [nodes, setNodes] = createStore([] as JSXNode[])
 
   createEffect(on(program, (program) => {
+
     if (program.program) {
       if (component.component) {
         const context = evaluate(program.program, options);
@@ -100,7 +105,6 @@ const JSXRenderer = ((props: JSXRendererProps) => {
       }
     }
   }))
-
 
   props.debug && console.groupEnd();
 

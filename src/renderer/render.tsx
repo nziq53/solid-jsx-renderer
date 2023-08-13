@@ -2,37 +2,41 @@ import { ESTree } from 'meriyah';
 import { JSXElement, JSXFragment, JSXNode, JSXText } from '../types';
 import { isUnknownHTMLElementTagName } from './isUnknownElementTagName';
 import { RenderingOptions } from './options';
-import { JSX } from 'solid-js';
+import { For, JSX, mergeProps } from 'solid-js';
 import { Dynamic } from "solid-js/web";
 
 const fileName = 'jsx';
 
-export const renderJSX = (node: JSXNode | JSXNode[], options: RenderingOptions): JSX.Element | JSX.Element[] => {
-  if (node === null) return node;
-  if (node === undefined) return node;
-  if (Array.isArray(node)) return node.map((n) => renderJSX(n, options));
+export const RenderJSX = (props: { node: JSXNode | JSXNode[], options: RenderingOptions }) => {
+  if (props.node === null) return undefined;
+  if (props.node === undefined) return undefined;
+  if (Array.isArray(props.node)) {
+    return <For each={props.node}>{(node, _i) =>
+      <RenderJSX node={node} options={props.options} />
+    }</For>
+  }
 
-  switch (typeof node) {
+  switch (typeof props.node) {
     case 'boolean':
-      return node;
+      return <>props.node</>;
     case 'string':
     case 'number':
-      return renderJSXText(node, options);
+      return <RenderJSXText text={props.node} options={props.options} />
     default:
-      return renderJSXNode(node, options);
+      return <RenderJSXNode node={props.node} options={props.options} />
   }
 };
 
-const renderJSXText = (text: JSXText, options: RenderingOptions): JSX.Element => {
-  return applyFilter(options.textFilters || [], text);
+const RenderJSXText = (props: { text: JSXText, options: RenderingOptions }) => {
+  return applyFilter(props.options.textFilters || [], props.text);
 };
 
-const renderJSXNode = (node: JSXElement | JSXFragment, options: RenderingOptions): JSX.Element => {
-  switch (node.type) {
+const RenderJSXNode = (props: { node: JSXElement | JSXFragment, options: RenderingOptions }): JSX.Element => {
+  switch (props.node.type) {
     case 'element':
-      return renderJSXElement(node, options);
+      return renderJSXElement(props.node, props.options);
     case 'fragment':
-      return renderJSXFragment(node, options);
+      return renderJSXFragment(props.node, props.options);
   }
 };
 
@@ -61,15 +65,12 @@ const renderJSXElement = (element: JSXElement, options: RenderingOptions): JSX.E
   //   )
   // }
 
-  let move_props = {
-    ...filtered.props,
-    ...renderSourcePosition(element.loc, options),
-  }
+  let move_props = mergeProps(filtered.props, renderSourcePosition(element.loc, options))
   return (
     <Dynamic component={filtered.component} {...move_props}>
-      {
-        filtered.children.map((child) => renderJSX(child, options))
-      }
+      <For each={filtered.children}>{(child, _i) =>
+        <RenderJSX node={child} options={options} />
+      }</For>
     </Dynamic>
   );
 };
@@ -79,11 +80,9 @@ const renderJSXFragment = (fragment: JSXFragment, options: RenderingOptions): JS
 
   if (filtered) {
     return (
-      <>
-        {
-          filtered?.children.map((child) => renderJSX(child, options))
-        }
-      </>
+      <For each={filtered.children}>{(child, _i) =>
+        <RenderJSX node={child} options={options} />
+      }</For>
     )
   } else {
     return undefined;

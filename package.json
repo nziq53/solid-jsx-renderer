@@ -1,26 +1,57 @@
 {
-  "name": "solid-jsx-renderer",
-  "private": true,
+  "name": "@oligami/solid-jsx-renderer",
+  "private": false,
   "version": "0.1.0",
   "type": "module",
-  "description": "",
-  "main": "dist/index.js",
+  "description": "A Solidjs Component for Rendering JSX",
+  "main": "./dist/solid-jsx-renderer.umd.cjs",
+  "module": "./dist/solid-jsx-renderer.js",
+  "types": "./types/index.d.ts",
+  "typings": "dist/index.d.ts",
+  "source": [
+    "./docs/index.html"
+  ],
+  "targets": {
+    "doc": {},
+    "main": false,
+    "module": false,
+    "types": false
+  },
+  "homepage": "https://github.com/oligami-0424/solid-jsx-renderer",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/oligami-0424/solid-jsx-renderer.git"
+  },
+  "keywords": [
+    "solidjs",
+    "jsx",
+    "renderer"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/solid-jsx-renderer.js",
+      "require": "./dist/solid-jsx-renderer.umd.cjs"
+    }
+  },
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
+    "build": "tsc && vite build",
     "build:examples": "rm -rf docs && vite build examples --outDir ../docs",
-    "preview:examples": "vite preview --outDir docs"
+    "preview": "vite preview",
+    "preview:examples": "vite preview --outDir docs",
+    "prepare": "pnpm build"
   },
-  "keywords": [],
   "author": "",
   "license": "MIT",
   "files": [
-    "dist"
+    "dist/**/*.{js,umd.cjs}",
+    "src/**/*.{ts,tsx}",
+    "types/**/*.{d.ts,map}",
+    "package.json"
   ],
   "dependencies": {
     "meriyah": "~4.3.7",
-    "solid-js": ">=1.7.11"
+    "solid-js": "^1.7.11"
   },
   "devDependencies": {
     "@types/node": "^20.4.10",
@@ -30,5 +61,9 @@
   },
   "peerDependencies": {
     "solid-js": ">=1.7.11"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }

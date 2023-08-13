@@ -3,29 +3,38 @@
     "target": "ESNext",
     "useDefineForClassFields": true,
     "module": "ESNext",
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    /* Bundler mode */
+    "lib": [
+      "ESNext",
+      "DOM"
+    ],
     "moduleResolution": "node",
-    "allowImportingTsExtensions": true,
+    // "strict": true,
+    "sourceMap": true,
     "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "emitDeclarationOnly": true,
     "isolatedModules": true,
-    "noEmit": true,
+    "declaration": true,
+    "declarationMap": true,
+    "declarationDir": "./types",
+    // "noUnusedLocals": true,
+    // "noUnusedParameters": true,
+    // "noFallthroughCasesInSwitch": true,
+    // "noImplicitReturns": true,
     "jsx": "preserve",
     "jsxImportSource": "solid-js",
-    /* Linting */
-    "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "skipDefaultLibCheck": true,
+    "forceConsistentCasingInFileNames": true
   },
   "include": [
     "examples/src",
-    "src"
+    "src/**/*"
   ],
-  "references": [
-    {
-      "path": "./tsconfig.node.json"
-    }
-  ]
+  "exclude": [
+    "dist",
+    "node_modules"
+  ],
+  "compileOnSave": false
 }
