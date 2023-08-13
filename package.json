@@ -1,0 +1,33 @@
+{
+  "name": "solid-jsx-renderer",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "build:examples": "cd examples && vite build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "solid-js": ">=1.7.11",
+    "meriyah": "~4.3.7"
+  },
+  "devDependencies": {
+    "@types/node": "^20.4.10",
+    "typescript": "^5.1.6",
+    "vite": "^4.4.9",
+    "vite-plugin-solid": "^2.7.0"
+  },
+  "peerDependencies": {
+    "solid-js": ">=1.7.11"
+  }
+}
