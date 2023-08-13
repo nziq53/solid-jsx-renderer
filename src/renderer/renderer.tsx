@@ -88,22 +88,31 @@ const JSXRenderer = ((props: JSXRendererProps) => {
     if (typeof refNodes.refNodes === 'function') refNodes.refNodes(nodes);
   });
 
-  const [nodes, setNodes] = createStore([] as JSXNode[])
 
-  createEffect(on(program, (program) => {
-
-    if (program.program) {
+  const programToNodes = (prog: {
+    program?: ESTree.Program;
+    error?: Error;
+  }): JSXNode[] | undefined => {
+    if (prog.program) {
       if (component.component) {
-        const context = evaluate(program.program, options);
+        const context = evaluate(prog.program, options);
         if (typeof context.exports[component.component] === 'function') {
-          setNodes(reconcile([{ type: 'element', component: context.exports[component.component], props: componentProps.componentProps || {}, children: [] }]))
+          return [{ type: 'element', component: context.exports[component.component], props: componentProps.componentProps || {}, children: [] }]
         } else {
-          setNodes(reconcile([]))
+          return []
         }
       } else {
-        setNodes(reconcile(evaluateJSX(program.program, options)))
+        return evaluateJSX(prog.program, options)
       }
     }
+    return undefined
+  }
+
+  const [nodes, setNodes] = createStore(programToNodes(program()) ?? [])
+
+  createEffect(on(program, (program) => {
+    let nodes_ret = programToNodes(program)
+    if (nodes_ret) setNodes(reconcile(nodes_ret))
   }))
 
   props.debug && console.groupEnd();
