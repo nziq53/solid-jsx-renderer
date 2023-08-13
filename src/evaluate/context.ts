@@ -4,6 +4,34 @@ import { AnyFunction, EvaluateOptions } from './options';
 
 type VariableKind = ESTree.VariableDeclaration['kind'];
 
+class KeyGenerator {
+  private readonly prefix: string;
+  private readonly counter: number[];
+
+  constructor(prefix?: string) {
+    this.prefix = prefix || '';
+    this.counter = [0];
+  }
+
+  public increment() {
+    this.counter[this.counter.length - 1]++;
+  }
+
+  public openingElement() {
+    this.counter.push(0);
+  }
+
+  public closingElement() {
+    this.counter.pop();
+  }
+
+  public generate(): string {
+    this.increment();
+    const key = this.counter.map((counter) => counter.toFixed(0)).join('-');
+    return this.prefix ? `${this.prefix}-${key}` : key;
+  }
+}
+
 class Variable {
   public readonly kind: VariableKind;
   private init = false;
@@ -64,6 +92,7 @@ const systemVariables = {
 
 export class JSXContext {
   public readonly options: EvaluateOptions;
+  public readonly keyGenerator: KeyGenerator;
   public readonly binding: Binding;
   public readonly components: ComponentsBinding;
   public readonly allowedFunctions: AnyFunction[];
@@ -74,6 +103,7 @@ export class JSXContext {
 
   constructor(options: EvaluateOptions) {
     this.options = options;
+    this.keyGenerator = new KeyGenerator(options.keyPrefix);
 
     this.binding = options.binding || {};
     this.components = options.components || {};

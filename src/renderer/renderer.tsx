@@ -3,7 +3,8 @@ import { evaluate, evaluateJSX, EvaluateOptions, parse, ParseOptions } from '../
 import { JSXNode } from '../types';
 import { RenderingOptions } from './options';
 import { renderJSX } from './render';
-import { Accessor, createContext, createEffect, createMemo, JSX, mergeProps, Ref, Show, splitProps, useContext } from 'solid-js';
+import { Accessor, createContext, createEffect, createMemo, JSX, mergeProps, on, Ref, Show, splitProps, useContext } from 'solid-js';
+import { createStore, reconcile } from 'solid-js/store';
 
 export interface JSXNodeRendererProps extends RenderingOptions {
   /**
@@ -18,7 +19,6 @@ const JSXNodeRenderer = (props: JSXNodeRendererProps) => {
 
   return <>{nodes.nodes.map((node: JSXNode | JSXNode[]) => renderJSX(node, options))}</>;
 };
-JSXNodeRenderer.displayName = 'JSXNodeRenderer';
 
 export { JSXNodeRenderer };
 export { JSXRenderer };
@@ -81,32 +81,32 @@ const JSXRenderer = ((props: JSXRendererProps) => {
   });
 
   createEffect(() => {
-    if (typeof refNodes.refNodes === 'function') refNodes.refNodes(nodes());
+    if (typeof refNodes.refNodes === 'function') refNodes.refNodes(nodes);
   });
 
-  let nodes: Accessor<JSXNode[]> = createMemo((before) => {
-    let nodes: JSXNode[];
-    if (program().program) {
+  const [nodes, setNodes] = createStore([] as JSXNode[])
+
+  createEffect(on(program, (program) => {
+    if (program.program) {
       if (component.component) {
-        const context = evaluate(program().program!, options);
+        const context = evaluate(program.program, options);
         if (typeof context.exports[component.component] === 'function') {
-          nodes = [{ type: 'element', component: context.exports[component.component], props: componentProps.componentProps || {}, children: [] }];
+          setNodes(reconcile([{ type: 'element', component: context.exports[component.component], props: componentProps.componentProps || {}, children: [] }]))
         } else {
-          nodes = [];
+          setNodes(reconcile([]))
         }
       } else {
-        nodes = evaluateJSX(program().program!, options);
+        setNodes(reconcile(evaluateJSX(program.program, options)))
       }
-    } else {
-      return before!
     }
-    return nodes
-  });
+  }))
+
+
   props.debug && console.groupEnd();
 
   return (
     <>
-      <JSXNodeRenderer {...options} nodes={nodes()} />
+      <JSXNodeRenderer {...options} nodes={nodes} />
       <Show when={program().error}>
         <Fallback {...props} error={program().error} />
       </Show>

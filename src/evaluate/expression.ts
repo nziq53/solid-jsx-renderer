@@ -563,11 +563,13 @@ export const evalJSXText = (jsx: ESTree.JSXText, _context: JSXContext): JSXText 
   return jsx.value;
 };
 
-export const evalJSXClosingElement = (_jsx: ESTree.JSXClosingElement, _context: JSXContext) => {
+export const evalJSXClosingElement = (_jsx: ESTree.JSXClosingElement, context: JSXContext) => {
+  context.keyGenerator.closingElement();
   return undefined;
 };
 
-export const evalJSXClosingFragment = (_jsx: ESTree.JSXClosingFragment, _context: JSXContext) => {
+export const evalJSXClosingFragment = (_jsx: ESTree.JSXClosingFragment, context: JSXContext) => {
+  context.keyGenerator.closingElement();
   return undefined;
 };
 
@@ -592,14 +594,23 @@ export const evalJSXOpeningElement = (jsx: ESTree.JSXOpeningElement, context: JS
     }
   });
   if (!context.options.disableKeyGeneration && properties['key'] === undefined) {
+    const key = context.keyGenerator.generate();
+    properties['key'] = key
   }
 
+  context.keyGenerator.openingElement();
+  if (jsx.selfClosing) context.keyGenerator.closingElement();
   return [component, properties];
 };
 
-export const evalJSXOpeningFragment = (_jsx: ESTree.JSXOpeningFragment, _context: JSXContext): [undefined, JSXProperties] => {
+export const evalJSXOpeningFragment = (_jsx: ESTree.JSXOpeningFragment, context: JSXContext): [undefined, JSXProperties] => {
   const properties: JSXProperties = {};
 
+  if (!context.options.disableKeyGeneration && properties['key'] === undefined) {
+    properties['key'] = context.keyGenerator.generate();
+  }
+
+  context.keyGenerator.openingElement();
   return [undefined, properties];
 };
 

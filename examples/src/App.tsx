@@ -1,15 +1,19 @@
 import './App.css'
 import { JSXRenderer } from '../../src/index'
-import { createSignal } from 'solid-js';
+import { Show, createSignal } from 'solid-js';
 
 // テキスト入力用のコンポーネント
 function TextInput(props: { value: string, onChange: (e: any) => any }) {
+  let ref: HTMLTextAreaElement
+  ref! && ref.focus()
+
   return (
     <textarea
+      ref={ref!}
       value={props.value}
       onInput={props.onChange}
       style={{
-        width: "100%",
+        width: "95%",
         height: "200px",
         resize: "vertical",
       }}
@@ -28,39 +32,67 @@ function DisplayText(props: { text: string }) {
 
 function App() {
   const [inputText, setInputText] = createSignal(`
-  <>
-    <DisplayText text={inputText()} />
-    <strong class='strong-text'>
-      <div>Let's rewrite!</div>
-    </strong>
-  </>
-  `);
+<>
+<div>
+  <p>code here: https://github.com/oligami-0424/solid-jsx-renderer</p>
+  <p>This is a port of the react This is a port of the library of
+    https://github.com/rosylilly/react-jsx-renderer</p>
+  <p></p>
+  <p>I'm not sure about package releases, so I'll get to that later.</p>
+  <button onClick={setInternal}>However, I am not sure about keygenerate in createStore, so I am leaving it alone. Therefore, when I put TextInput inside, it is very hard to get the focus off every time I type!</button>
+  <br />
+  <p>by deepl</p>
+  <p>author oligami</p>
+</div>
+<br/>
+<strong class='strong-text'>
+<div>Let's rewrite!</div>
+</strong>
+<DisplayText text={inputText()} />
+</>
+    `);
+  const [showSignal, setShowSignal] = createSignal(true)
+  const setInternal = () => {
+    setShowSignal(false)
+    setInputText(`
+<>
+<div>
+  <p>code here: https://github.com/oligami-0424/solid-jsx-renderer</p>
+  <p>This is a port of the react This is a port of the library of
+    https://github.com/rosylilly/react-jsx-renderer</p>
+  <p></p>
+  <p>I'm not sure about package releases, so I'll get to that later.</p>
+  <button onClick={setInternal}>However, I am not sure about keygenerate in createStore, so I am leaving it alone. Therefore, when I put TextInput inside, it is very hard to get the focus off every time I type!</button>
+  <br />
+  <p>by deepl</p>
+  <p>author oligami</p>
+</div>
+<br/>
+<strong class='strong-text'>
+<div>Let's rewrite!</div>
+</strong>
+<TextInput value={inputText()} onChange={(e) => setInputText(e.target.value)} />
+<DisplayText text={inputText()} />
+</>  
+    `)
+  }
 
   return (
     <>
-      <div>{`
-code here: https://github.com/oligami-0424/solid-jsx-renderer
-
-This is a port of the react This is a port of the library of
-https://github.com/rosylilly/react-jsx-renderer
-
-I'm not sure about package releases, so I'll get to that later.
-
-by deepl
-
-author oligami
-  `}</div>
-      <div style={{ width: "95vw" }}>
+      <Show when={showSignal()}>
         <TextInput value={inputText()} onChange={(e) => setInputText(e.target.value)} />
-        <JSXRenderer
-          binding={{
-            console: console,
-            inputText: inputText,
-          }}
-          components={{ DisplayText: DisplayText }}
-          code={inputText()}
-        />
-      </div>
+      </Show>
+      <JSXRenderer
+        binding={{
+          console,
+          inputText,
+          setInputText,
+          TextInput,
+          setInternal
+        }}
+        components={{ DisplayText: DisplayText }}
+        code={inputText()}
+      />
     </>
   )
 }
