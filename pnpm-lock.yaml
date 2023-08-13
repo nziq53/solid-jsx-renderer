@@ -6,7 +6,7 @@ settings:
 
 dependencies:
   meriyah:
-    specifier: ^4.3.7
+    specifier: latest
     version: 4.3.7
 
 devDependencies:
