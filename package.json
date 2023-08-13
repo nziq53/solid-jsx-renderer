@@ -1,13 +1,13 @@
 {
   "name": "@oligami/solid-jsx-renderer",
   "private": false,
-  "version": "0.1.0",
+  "version": "0.1.2",
   "type": "module",
   "description": "A Solidjs Component for Rendering JSX",
   "main": "./dist/solid-jsx-renderer.umd.cjs",
   "module": "./dist/solid-jsx-renderer.js",
-  "types": "./types/index.d.ts",
-  "typings": "dist/index.d.ts",
+  "types": "./types/src/index.d.ts",
+  "typings": "./types/src/index.d.ts",
   "source": [
     "./docs/index.html"
   ],
@@ -46,8 +46,9 @@
   "files": [
     "dist/**/*.{js,umd.cjs}",
     "src/**/*.{ts,tsx}",
-    "types/**/*.{d.ts,map}",
-    "package.json"
+    "types/src/**/*.{d.ts,map}",
+    "package.json",
+    "vite.config.ts"
   ],
   "dependencies": {
     "meriyah": "~4.3.7",
