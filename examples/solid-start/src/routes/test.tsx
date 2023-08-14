@@ -1,5 +1,5 @@
 import './test.css'
-import { JSXRenderer } from '../../../../src/index'
+// import { JSXRenderer } from '../../../../src/index'
 import { createSignal } from 'solid-js';
 
 // テキスト入力用のコンポーネント
