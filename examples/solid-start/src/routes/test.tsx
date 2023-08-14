@@ -3,38 +3,81 @@ import { JSXRenderer } from '../../../../src/index'
 import { createSignal } from 'solid-js';
 
 // テキスト入力用のコンポーネント
-function TextInput(props: { value: string, onChange: (e: any) => any }) {
-  let ref: HTMLTextAreaElement
-  ref! && ref.focus()
+// function TextInput1(props: { value: string, onChange: (e: any) => any }) {
+//   let ref: HTMLTextAreaElement
+//   ref! && ref.focus()
+//   // console.log("testttt")
+//   // console.log(props)
+//   // console.log(props.value)
+//   // console.log(props.onChange)
 
-  return (
-    <textarea
-      ref={ref!}
-      value={props.value}
-      onInput={props.onChange}
-      style={{
-        width: "95%",
-        height: "200px",
-        resize: "vertical",
-      }}
-    />
-  );
-}
+//   return (
+//     <textarea
+//       ref={ref!}
+//       value={props.value}
+//       onInput={props.onChange}
+//       style={{
+//         width: "95%",
+//         height: "200px",
+//         resize: "vertical",
+//       }}
+//     ></textarea>
+//   );
+// }
 
 // リアルタイム表示用のコンポーネント
-function DisplayText(props: { text: string }) {
-  return (
-    <div>
-      <p>input text: {props.text}</p>
-    </div>
-  );
-}
+// function DisplayText(props: { text: string }) {
+//   return (
+//     <div>
+//       <p>input text: {props.text}</p>
+//     </div>
+//   );
+// }
 
 function App() {
-  const [inputText, setInputText] = createSignal('')
+  const [inputText, setInputText] = createSignal(initialStr)
 
-  setTimeout(() => {
-    setInputText(`
+  // setTimeout(() => {
+  //   setInputText(initialStr)
+  // }, 1000)
+
+  return (
+    <>
+      <textarea
+        style={{
+          width: "95%",
+          height: "200px",
+          resize: "vertical",
+        }}
+      >{inputText()}</textarea>
+      <textarea
+        value={inputText()}
+        style={{
+          width: "95%",
+          height: "200px",
+          resize: "vertical",
+        }}
+      ></textarea>
+      {/* <p>test</p> */}
+      {/* <JSXRenderer
+        binding={{
+          console,
+          inputText,
+          setInputText,
+          TextInput1,
+          TextInput2,
+        }}
+        components={{ DisplayText: DisplayText }}
+        disableKeyGeneration
+        code={inputText()}
+      /> */}
+    </>
+  )
+}
+
+export default App
+
+const initialStr = `
 <>
 <div>
   <p>code here: https://github.com/oligami-0424/solid-jsx-renderer</p>
@@ -53,25 +96,4 @@ function App() {
 <TextInput value={inputText()} onChange={(e) => setInputText(e.target.value)} />
 <DisplayText text={inputText()} />
 </>  
-    `)
-  }, 1000)
-
-  return (
-    <>
-      <p>test</p>
-      <JSXRenderer
-        binding={{
-          console,
-          inputText,
-          setInputText,
-          TextInput,
-        }}
-        components={{ DisplayText: DisplayText }}
-        disableKeyGeneration
-        code={inputText()}
-      />
-    </>
-  )
-}
-
-export default App
+    `

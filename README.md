@@ -25,6 +25,7 @@ It has a JavaScript Runtime inside, and can execute the user's JSX with controll
 - [x] Can use on SSR(solid-start)
 - [ ] Binding Component SSR
   - binding Component which has binding props is not ssr on internal
+  - I tested <textarea> but this is not ssr also on normal
 - [x] Update only what is updated.
 
 Ported from:

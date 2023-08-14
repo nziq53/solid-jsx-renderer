@@ -42,6 +42,7 @@
   ],
   "scripts": {
     "dev": "vite",
+    "dev:ssr": "cd examples/solid-start && pnpm dev",
     "build": "rollup -c",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
     "build:examples": "rm -rf docs && vite build examples/solidjs --outDir ../../docs",
