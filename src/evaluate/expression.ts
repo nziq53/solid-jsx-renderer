@@ -577,6 +577,7 @@ export const evalJSXOpeningElement = (jsx: ESTree.JSXOpeningElement, context: JS
   const { attributes } = jsx;
 
   const name = evalJSXTagNameExpression(jsx.name, context);
+
   const component = context.resolveComponent(name);
 
   const properties: JSXProperties = {};

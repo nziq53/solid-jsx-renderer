@@ -75,4 +75,9 @@ export interface EvaluateOptions extends Options {
    * If empty, all functions will be allowed to execute.
    */
   deniedFunctions?: AnyFunction[];
+
+  /**
+   * Binding SolidJS Components
+   */
+  disableSolidJSComponents?: boolean;
 }

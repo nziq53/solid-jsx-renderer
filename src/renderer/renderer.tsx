@@ -65,7 +65,14 @@ const DefaultJSXFallbackComponent: JSXFallbackComponent = (props: { error?: any;
 };
 
 const JSXRenderer = ((props: JSXRendererProps) => {
-  const contextOptions = useContext(JSXRendererContext);
+  let contextOptions = useContext(JSXRendererContext);
+  // if (!props.disableSolidJSComponents) {
+  //   contextOptions = mergeProps(contextOptions, {
+  //     binding: {
+  //       For
+  //     }
+  //   })
+  // }
   const [thisprop, options] = splitProps(mergeProps(contextOptions, props), ['code', 'fallbackComponent', 'refNodes', 'component', 'componentProps'])
   const Fallback = thisprop.fallbackComponent ? thisprop.fallbackComponent : DefaultJSXFallbackComponent;
 
