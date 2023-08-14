@@ -44,10 +44,9 @@ function App() {
     <p>author oligami</p>
   </div>
   <br/>
-  <strong class='strong-text'>
-  <div>Let's rewrite!</div>
-  </strong>
-  <TextInput value={inputText()} onChange={(e) => setInputText(e.target.value)} />
+  <For each={cats()}>{(cat, i) =>
+    <div>{cat.name}</div>
+  }</For>
   <For each={cats()}>{(cat, i) =>
     <li>
       <a target="_blank" href={\`https://www.youtube.com/watch?v=\${cat.id}\`}>
@@ -55,6 +54,10 @@ function App() {
       </a>
     </li>
   }</For>
+  <strong class='strong-text'>
+  <div>Let's rewrite!</div>
+  </strong>
+  <TextInput value={inputText()} onChange={(e) => setInputText(e.target.value)} />
   <DisplayText text={inputText()} />
 </>  
     `)
@@ -77,6 +80,9 @@ function App() {
   return (
     <>
       <For each={cats()}>{(cat, i) =>
+        <div>{cat.name}</div>
+      }</For>
+      <For each={cats()}>{(cat, i) =>
         <li>
           <a target="_blank" href={`https://www.youtube.com/watch?v=${cat.id}`}>
             {i() + 1}: {cat.name}
@@ -90,7 +96,7 @@ function App() {
           setInputText,
           TextInput,
           cats,
-          For,
+          // For,
         }}
         components={{ DisplayText: DisplayText }}
         disableKeyGeneration
@@ -114,3 +120,9 @@ function For<T extends readonly any[], U extends JSX.Element>(props: {
   // console.log(props.children)
   return <ForSolid {...props} >{props.children}</ForSolid>
 }
+
+const tmp = `
+<For each={cats()}>{(cat, i) =>
+  <div>qqq</div>
+}</For>
+`

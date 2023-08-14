@@ -2,8 +2,9 @@ import { ESTree } from 'meriyah';
 import { JSXElement, JSXFragment, JSXNode, JSXText } from '../types';
 import { isUnknownHTMLElementTagName } from './isUnknownElementTagName';
 import { RenderingOptions } from './options';
-import { For, mergeProps } from 'solid-js';
+import { For, children, createMemo, mergeProps, splitProps } from 'solid-js';
 import { Dynamic } from "solid-js/web";
+import { AnyFunction, EvaluateOptions } from 'evaluate';
 
 const fileName = 'jsx';
 
@@ -41,13 +42,12 @@ const RenderJSXNode = (props: { node: JSXElement | JSXFragment, options: Renderi
 };
 
 const RenderJSXElement = (props: { element: JSXElement, options: RenderingOptions }) => {
-  const filtered = applyFilter(props.options.elementFilters || [], props.element);
+  const filtered = applyFilter(props.options.elementFilters ?? [], props.element);
   if (!filtered) return undefined;
 
   if (props.options.disableUnknownHTMLElement && typeof filtered.component === 'string') {
-    const { component } = filtered;
     const checker = props.options.isUnknownHTMLElementTagName || isUnknownHTMLElementTagName;
-    if (checker(component)) return undefined;
+    if (checker(filtered.component)) return undefined;
   }
 
   // const component = filtered.component as AnyFunction;
@@ -66,11 +66,77 @@ const RenderJSXElement = (props: { element: JSXElement, options: RenderingOption
   // }
 
   let move_props = mergeProps(filtered.props, renderSourcePosition(props.element.loc, props.options))
+
+  // SolidJS実装
+  if (typeof filtered.component === 'string') {
+    // SolidJSのFor実装
+    if (filtered.component === 'For') {
+      // for (let item of filtered.children) {
+      //   console.log(item)
+      //   if (typeof item === 'function') {
+      //     console.log((item as AnyFunction)())
+      //   }
+      // }
+      // return (
+      //   <For each={filtered.children}>{(child, _i) =>
+      //     <RenderJSX node={child} options={props.options} />
+      //   }</For>
+      // )
+      // console.log(props.element.props.each)
+      // console.log(filtered.children[0]())
+      // console.log(filtered.children)
+
+
+      let [_each, other_props] = splitProps(move_props, ['each'])
+      console.log(_each.each)
+      // return (
+      //   <For each={filtered.children} {...other_props}>{(child, _i) => {
+      //     if (typeof child === 'function') {
+      //       console.log((child as AnyFunction)())
+      //       return (
+      //         <>
+      //           <div>item</div>
+      //           <RenderJSX node={(child as AnyFunction)()} options={props.options} />
+      //         </>
+      //       )
+      //     } else {
+      //       throw new Error('why')
+      //     }
+      //   }}</For >
+      // )
+      return (
+        <For each={_each.each} >{(for_child, for_i) => {
+          return <For each={filtered.children} {...other_props}>{(child, _i) => {
+            if (typeof child === 'function') {
+              // let options: RenderingOptions & EvaluateOptions = props.options
+              // options.binding ??= {}
+              // options.binding['cat'] = for_child
+              console.log((child as AnyFunction)(for_child, for_i))
+              return <RenderJSX node={(child as AnyFunction)(for_child, for_i)} options={props.options} />
+            } else {
+              throw new Error('why')
+            }
+          }}</For >
+        }}</For>
+      )
+    }
+  }
+
+  // return (
+  //   <Dynamic component={filtered.component} {...move_props}>
+  //     <For each={filtered.children}>{(child, _i) =>
+  //       <RenderJSX node={child} options={props.options} />
+  //     }</For>
+  //   </Dynamic>
+  // );
   return (
     <Dynamic component={filtered.component} {...move_props}>
-      <For each={filtered.children}>{(child, _i) =>
-        <RenderJSX node={child} options={props.options} />
-      }</For>
+      <For each={filtered.children}>{(child, _i) => {
+        // console.log("###############")
+        // console.log(child)
+        // console.log("###############")
+        return <RenderJSX node={child} options={props.options} />
+      }}</For>
     </Dynamic>
   );
 };
