@@ -58,6 +58,14 @@ function App() {
           resize: "vertical",
         }}
       ></textarea>
+      <textarea
+        value="test"
+        style={{
+          width: "95%",
+          height: "200px",
+          resize: "vertical",
+        }}
+      ></textarea>
       {/* <p>test</p> */}
       {/* <JSXRenderer
         binding={{
