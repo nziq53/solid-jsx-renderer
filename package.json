@@ -1,6 +1,6 @@
 {
   "name": "@oligami/solid-jsx-renderer",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "private": false,
   "description": "A Solidjs Component for Rendering JSX",
   "keywords": [
@@ -57,7 +57,7 @@
     "./docs/index.html"
   ],
   "devDependencies": {
-    "@types/node": "^20.4.10",
+    "@types/node": "^20.5.0",
     "rollup": "^3.28.0",
     "rollup-preset-solid": "^2.0.1",
     "solid-js": "^1.7.11",

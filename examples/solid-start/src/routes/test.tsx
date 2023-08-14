@@ -1,38 +1,37 @@
 import './test.css'
-// import { JSXRenderer } from '../../../../src/index'
+import { JSXRenderer } from '../../../../src/index'
 import { createSignal } from 'solid-js';
 
 // テキスト入力用のコンポーネント
-// function TextInput1(props: { value: string, onChange: (e: any) => any }) {
-//   let ref: HTMLTextAreaElement
-//   ref! && ref.focus()
-//   // console.log("testttt")
-//   // console.log(props)
-//   // console.log(props.value)
-//   // console.log(props.onChange)
+function TextInput(props: { value: string, onChange: (e: any) => any }) {
+  let ref: HTMLTextAreaElement
+  ref! && ref.focus()
+  // console.log("testttt")
+  // console.log(props)
+  // console.log(props.value)
+  // console.log(props.onChange)
 
-//   return (
-//     <textarea
-//       ref={ref!}
-//       value={props.value}
-//       onInput={props.onChange}
-//       style={{
-//         width: "95%",
-//         height: "200px",
-//         resize: "vertical",
-//       }}
-//     ></textarea>
-//   );
-// }
+  return (
+    <textarea
+      ref={ref!}
+      onInput={props.onChange}
+      style={{
+        width: "95%",
+        height: "200px",
+        resize: "vertical",
+      }}
+    >{props.value}</textarea>
+  );
+}
 
 // リアルタイム表示用のコンポーネント
-// function DisplayText(props: { text: string }) {
-//   return (
-//     <div>
-//       <p>input text: {props.text}</p>
-//     </div>
-//   );
-// }
+function DisplayText(props: { text: string }) {
+  return (
+    <div>
+      <p>input text: {props.text}</p>
+    </div>
+  );
+}
 
 function App() {
   const [inputText, setInputText] = createSignal(initialStr)
@@ -43,42 +42,18 @@ function App() {
 
   return (
     <>
-      <textarea
-        style={{
-          width: "95%",
-          height: "200px",
-          resize: "vertical",
-        }}
-      >{inputText()}</textarea>
-      <textarea
-        value={inputText()}
-        style={{
-          width: "95%",
-          height: "200px",
-          resize: "vertical",
-        }}
-      ></textarea>
-      <textarea
-        value="test"
-        style={{
-          width: "95%",
-          height: "200px",
-          resize: "vertical",
-        }}
-      ></textarea>
-      {/* <p>test</p> */}
-      {/* <JSXRenderer
+      <p>test</p>
+      <JSXRenderer
         binding={{
           console,
           inputText,
           setInputText,
-          TextInput1,
-          TextInput2,
+          TextInput,
         }}
         components={{ DisplayText: DisplayText }}
         disableKeyGeneration
         code={inputText()}
-      /> */}
+      />
     </>
   )
 }
@@ -104,4 +79,4 @@ const initialStr = `
 <TextInput value={inputText()} onChange={(e) => setInputText(e.target.value)} />
 <DisplayText text={inputText()} />
 </>  
-    `
+`

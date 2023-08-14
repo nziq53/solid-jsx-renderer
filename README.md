@@ -15,7 +15,7 @@ It has a JavaScript Runtime inside, and can execute the user's JSX with controll
   - without async, await and generator
 - [x] Injectable custom SolidJS components
 - [x] Pass binding variables
-- [ ] Applicable filters to parsed nodes
+- [x] Applicable filters to parsed nodes
   - You can create allowlist / denylist filters to tagName, attributes or properties
   - Operation has not been checked.
 - [x] Avoid user's call expressions
@@ -23,17 +23,19 @@ It has a JavaScript Runtime inside, and can execute the user's JSX with controll
 - [x] Parse with meriyah
 ## My Features
 - [x] Can use on SSR(solid-start)
-- [ ] Binding Component SSR
-  - binding Component which has binding props is not ssr on internal
-  - I tested <textarea> but this is not ssr also on normal
+- [x] Binding Component SSR
+  - binding Component which has binding props is also ssr on internal
+  - `<textarea value={signal()}>` is not ssr on solid-start. You should use `<textarea>{signal()}</textarea>`
 - [x] Update only what is updated.
+- [ ] can use Show, For, Index... (only SolidJS Component)
+
+If there is a feature you want, please contact us at issue
 
 Ported from:
 [https://github.com/rosylilly/react-jsx-renderer](https://github.com/rosylilly/react-jsx-renderer) v1.3.1
 See here for detailed instructions.
 
 [This is sample code](https://github.com/oligami-0424/solid-jsx-renderer/tree/main/examples/solidjs)
-
 
 ## Installation
 
