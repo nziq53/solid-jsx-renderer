@@ -64,4 +64,6 @@ disableSolidJSComponents:
 
 ## !!
 
-- ContextProviderで囲って値を渡したときはリアクティブではありません
+- ContextProviderで囲って値を渡したときはリアクティブではありません（たぶん）
+- `<div>{"###"}</div>`がダメ
+- `<For></For>`でうまくstackできてない？？ エラーが出る
