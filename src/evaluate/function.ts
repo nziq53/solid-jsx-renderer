@@ -9,7 +9,6 @@ import { evalStatement } from './statement';
 export const evalFunction = (
   exp: ESTree.FunctionDeclaration | ESTree.FunctionExpression | ESTree.ArrowFunctionExpression,
   context: JSXContext,
-  binding: any
 ): [IdentifierBinding | undefined, AnyFunction] => {
   if (exp.async) {
     throw new JSXEvaluateError('async function not supported', exp, context);
@@ -30,7 +29,7 @@ export const evalFunction = (
             evalStatement(exp.body, context);
             break;
           default:
-            retval = evalExpression(exp.body, context, binding);
+            retval = evalExpression(exp.body, context);
         }
       }
     } catch (err) {

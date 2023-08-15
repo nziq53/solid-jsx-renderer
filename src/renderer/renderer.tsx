@@ -19,11 +19,13 @@ const JSXNodeRenderer = (props: JSXNodeRendererProps & { ctx: JSXContext }) => {
   const contextOptions = useContext(JSXRendererContext);
   const [nodes, options] = splitProps(mergeProps(contextOptions, props), ['nodes']);
 
-  return <>
+  return (
     <For each={nodes.nodes}>{(node, _i) =>
-      <RenderJSX node={node} options={options} ctx={props.ctx} />
+      <>
+        <RenderJSX node={node} options={options} ctx={props.ctx} />
+      </>
     }</For>
-  </>;
+  )
 };
 
 export { JSXNodeRenderer };
@@ -99,7 +101,7 @@ const JSXRenderer = ((props: JSXRendererProps) => {
   const ctx = new JSXContext(options)
 
   createEffect(() => {
-    if (typeof thisprop.refNodes === 'function') thisprop.refNodes(nodes.map(node => node.func(options.binding, ctx)));
+    if (typeof thisprop.refNodes === 'function') thisprop.refNodes(nodes.map(node => node.func(ctx)));
   });
 
   const programToNodes = (prog: {
@@ -110,7 +112,7 @@ const JSXRenderer = ((props: JSXRendererProps) => {
       if (thisprop.component) {
         const context = evaluate(prog.program, options);
         if (typeof context.exports[thisprop.component] === 'function') {
-          return [new JSXNodeFunc((_binding: any, _ctx: JSXContext) => { return { type: 'element', component: context.exports[thisprop.component!], props: thisprop.componentProps || {}, children: [] } }, 'Node')]
+          return [new JSXNodeFunc((ctx: JSXContext) => { return { type: 'element', component: context.exports[thisprop.component!], props: thisprop.componentProps || {}, children: [] } }, 'Node')]
         } else {
           return []
         }

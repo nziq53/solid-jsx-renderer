@@ -5,8 +5,8 @@ import { Definition, evalMethodDefinition, evalPropertyDefinition } from './defi
 import { evalExpression, evalFunctionExpression } from './expression';
 import { AnyFunction } from './options';
 
-export const evalClassDeclaration = (declaration: ESTree.ClassDeclaration, context: JSXContext, binding: any) => {
-  const constructor = evalClassDeclarationBase(declaration, context, binding);
+export const evalClassDeclaration = (declaration: ESTree.ClassDeclaration, context: JSXContext) => {
+  const constructor = evalClassDeclarationBase(declaration, context);
 
   if (declaration.id) {
     const binding = evalIdentifierBinding(declaration.id, context);
@@ -15,11 +15,11 @@ export const evalClassDeclaration = (declaration: ESTree.ClassDeclaration, conte
   return constructor;
 };
 
-export const evalClassExpression = (expression: ESTree.ClassExpression, context: JSXContext, binding: any) => {
-  return evalClassDeclarationBase(expression, context, binding);
+export const evalClassExpression = (expression: ESTree.ClassExpression, context: JSXContext) => {
+  return evalClassDeclarationBase(expression, context);
 };
 
-export const evalClassDeclarationBase = (base: ESTree.ClassDeclaration | ESTree.ClassExpression, context: JSXContext, binding: any) => {
+export const evalClassDeclarationBase = (base: ESTree.ClassDeclaration | ESTree.ClassExpression, context: JSXContext) => {
   let constructor: AnyFunction = function () { };
   const klass = function (this: any, ...args: any[]) {
     context.pushStack(this);
@@ -31,10 +31,10 @@ export const evalClassDeclarationBase = (base: ESTree.ClassDeclaration | ESTree.
     let definition: Definition | AnyFunction | undefined;
     switch (stmt.type) {
       case 'PropertyDefinition':
-        definition = evalPropertyDefinition(stmt, context, binding);
+        definition = evalPropertyDefinition(stmt, context);
         break;
       default: {
-        definition = evalClassElement(stmt as any, context, binding);
+        definition = evalClassElement(stmt as any, context);
       }
     }
 
@@ -65,7 +65,7 @@ export const evalClassDeclarationBase = (base: ESTree.ClassDeclaration | ESTree.
   }
 
   if (base.superClass) {
-    const superClass = evalExpression(base.superClass, context, binding);
+    const superClass = evalExpression(base.superClass, context);
     Object.setPrototypeOf(klass, Object.getPrototypeOf(superClass));
 
     Object.defineProperty(klass, 'super', { enumerable: false, writable: true, value: superClass });
@@ -79,12 +79,12 @@ export const evalClassDeclarationBase = (base: ESTree.ClassDeclaration | ESTree.
   return klass;
 };
 
-export const evalClassElement = (element: ESTree.ClassElement, context: JSXContext, binding: any) => {
+export const evalClassElement = (element: ESTree.ClassElement, context: JSXContext) => {
   switch (element.type) {
     case 'FunctionExpression': {
-      return evalFunctionExpression(element, context, binding);
+      return evalFunctionExpression(element, context);
     }
     case 'MethodDefinition':
-      return evalMethodDefinition(element, context, binding);
+      return evalMethodDefinition(element, context);
   }
 };

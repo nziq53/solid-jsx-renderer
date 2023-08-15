@@ -28,16 +28,16 @@ export type JSXNode = JSXElement | JSXFragment | JSXText | boolean | null | unde
 type JSXNodeTypes = 'Node' | 'Literal'
 
 export class JSXNodeFunc {
-  func: (binding: any, ctx: JSXContext) => JSXNode
+  func: (ctx: JSXContext) => JSXNode
   type: JSXNodeTypes
 
-  constructor(node: (binding: any, ctx: JSXContext) => JSXNode, type: JSXNodeTypes) {
+  constructor(node: (ctx: JSXContext) => JSXNode, type: JSXNodeTypes) {
     this.func = node
     this.type = type
   }
 
   isJSXLiteralFunc(): this is {
-    func: (binding: any, ctx: JSXContext) => JSXText | boolean | null | undefined
+    func: (ctx: JSXContext) => JSXText | boolean | null | undefined
     type: JSXNodeTypes
   } {
     if (this.type === 'Literal')
@@ -48,10 +48,10 @@ export class JSXNodeFunc {
 
 export interface JSXLiteralFunc extends JSXNodeFunc {
   type: 'Literal'
-  func: (binding: any, ctx: JSXContext) => JSXText | boolean | null | undefined
+  func: (ctx: JSXContext) => JSXText | boolean | null | undefined
 }
 
 export interface JSXElementFunc extends JSXNodeFunc {
   type: 'Node'
-  func: (binding: any, ctx: JSXContext) => JSXElement | JSXFragment
+  func: (ctx: JSXContext) => JSXElement | JSXFragment
 }

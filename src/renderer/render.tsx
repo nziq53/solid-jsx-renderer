@@ -9,6 +9,16 @@ import { AnyFunction, EvaluateOptions, JSXContext } from 'evaluate';
 const fileName = 'jsx';
 
 export const RenderJSX = (props: { node: JSXNodeFunc | JSXNodeFunc[], options: RenderingOptions & EvaluateOptions, ctx: JSXContext }) => {
+  // for (let k in props.options.binding) {
+  //   props.ctx.setVariable(k, props.options.binding[k])
+  // }
+  let ctx_cpy = createMemo(() => {
+    let ctx = props.ctx
+    for (let k in props.options.binding) {
+      ctx.setVariable(k, props.options.binding[k])
+    }
+    return ctx
+  })
   if (props.node === undefined) return undefined;
   if (props.node === null) return undefined;
   if (Array.isArray(props.node)) {
@@ -40,9 +50,11 @@ export const RenderJSX = (props: { node: JSXNodeFunc | JSXNodeFunc[], options: R
   // console.log(props.node)
   // console.log(props.node.func(props.options.binding))
   if (props.node.type === 'Node') {
-    return <RenderJSXNode node={props.node.func(props.options.binding, props.ctx) as (JSXElement | JSXFragment)} options={props.options} ctx={props.ctx} />
+    return <>
+      <RenderJSXNode node={props.node.func(ctx_cpy()) as (JSXElement | JSXFragment)} options={props.options} ctx={ctx_cpy()} />
+    </>
   }
-  return <RenderJSXText text={(props.node as JSXLiteralFunc).func(props.options.binding, props.ctx)} options={props.options} ctx={props.ctx} />
+  return <RenderJSXText text={(props.node as JSXLiteralFunc).func(ctx_cpy())} options={props.options} ctx={ctx_cpy()} />
 };
 
 const RenderJSXText = (props: { text: JSXText | boolean | undefined | null, options: RenderingOptions, ctx: JSXContext }) => {
@@ -68,6 +80,7 @@ const RenderJSXText = (props: { text: JSXText | boolean | undefined | null, opti
 };
 
 const RenderJSXNode = (props: { node: JSXElement | JSXFragment, options: RenderingOptions, ctx: JSXContext }) => {
+  if (!props.node) return undefined
   switch (props.node.type) {
     case 'element':
       return <RenderJSXElement element={props.node} options={props.options} ctx={props.ctx} />;
@@ -130,12 +143,13 @@ const RenderJSXElement = (props: { element: JSXElement, options: RenderingOption
             //   // throw new Error('why this is not function')
             // }
             // return <RenderJSX node={(filtered.children[0].func(props.options.binding) as AnyFunction)(for_child, for_i)} options={props.options} />
-            // let anyfunc: AnyFunction = filtered.children[0].func(props.options.binding) as unknown as AnyFunction
+            // let anyfunc: AnyFunction = filtered.children[0].func(props.ctx) as unknown as AnyFunction
             // console.log(anyfunc)
             // let compo = anyfunc(for_child, for_i)
             // console.log(compo)
-            let nnn = new JSXNodeFunc((binding: any, ctx: JSXContext) => {
-              let anyfunc: AnyFunction = filtered.children[0].func(binding, ctx) as unknown as AnyFunction
+
+            let nnn = new JSXNodeFunc((ctx: JSXContext) => {
+              let anyfunc: AnyFunction = filtered.children[0].func(ctx) as unknown as AnyFunction
               console.log(for_child)
               let compo = anyfunc(for_child, for_i)
               // console.log(compo)

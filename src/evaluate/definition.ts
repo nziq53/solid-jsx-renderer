@@ -21,7 +21,7 @@ export interface PropertyDefinition {
 
 export type Definition = MethodDefinition | PropertyDefinition;
 
-export const evalMethodDefinition = (exp: ESTree.MethodDefinition, context: JSXContext, binding: any): MethodDefinition | undefined => {
+export const evalMethodDefinition = (exp: ESTree.MethodDefinition, context: JSXContext): MethodDefinition | undefined => {
   if (!exp.key) return undefined;
 
   let key: string;
@@ -33,10 +33,10 @@ export const evalMethodDefinition = (exp: ESTree.MethodDefinition, context: JSXC
       key = exp.key.name;
       break;
     default:
-      key = evalExpression(exp.key, context, binding);
+      key = evalExpression(exp.key, context);
       break;
   }
-  const value = evalFunctionExpression(exp.value, context, binding);
+  const value = evalFunctionExpression(exp.value, context);
 
   return {
     type: 'Method',
@@ -47,7 +47,7 @@ export const evalMethodDefinition = (exp: ESTree.MethodDefinition, context: JSXC
   };
 };
 
-export const evalPropertyDefinition = (exp: ESTree.PropertyDefinition, context: JSXContext, binding: any): PropertyDefinition => {
+export const evalPropertyDefinition = (exp: ESTree.PropertyDefinition, context: JSXContext): PropertyDefinition => {
   let key: string;
   switch (exp.key.type) {
     case 'Identifier':
@@ -57,10 +57,10 @@ export const evalPropertyDefinition = (exp: ESTree.PropertyDefinition, context: 
       key = exp.key.name;
       break;
     default:
-      key = evalExpression(exp.key, context, binding);
+      key = evalExpression(exp.key, context);
       break;
   }
-  const value = evalExpression(exp.value, context, binding);
+  const value = evalExpression(exp.value, context);
 
   return {
     type: 'Property',

@@ -48,8 +48,8 @@ function App(props: { time: boolean }) {
   const [inputText, setInputText] = createSignal(`
 <>
   <div>
-    <div>{test_func()}</div>
-    <Show when={true}>
+    <Show when={time}>
+      <div>{test_func()}</div>
     </Show>
     <p>code here: <a href="https://github.com/oligami-0424/solid-jsx-renderer" target="_blank" rel="noopener noreferrer">https://github.com/oligami-0424/solid-jsx-renderer</a></p>
     <p>This is a port of the react This is a port of the library of
@@ -64,26 +64,26 @@ function App(props: { time: boolean }) {
   <strong class='strong-text'>
     <div>Let's rewrite!</div>
   </strong>
-  <TextInput value={inputText()} onChange={(e) => setInputText(e.target.value)} />
-  <For each={cats()}>{(cat, i) => {
-    // console.log("###")
+  {/*<For each={cats()}>{(cat, i) => {
+    console.log("###")
     return <li>
       <a target="_blank" href={\`https://www.youtube.com/watch?v=\${cat.id}\`}>
         {i() + 1}: {cat.name}
       </a>
     </li>
-  }}</For>
-  <Index each={cats()}>{(cat, i) => {
-  // console.log("###")
+  }}</For>*/}
+  {/*<Index each={cats()}>{(cat, i) => {
+    // console.log("###")
     return <li>
       <a target="_blank" href={\`https://www.youtube.com/watch?v=\${cat.id}\`}>
         {i + 1}: {cat().name}
       </a>
     </li>
-  }}</Index >
+  }}</Index>*/}
   <A href="/">link index</A>
   <DisplayCats cats={cats()} />
   <DisplayText text={inputText()} />
+  {/*<TextInput value={inputText()} onChange={(e) => setInputText(e.target.value)} />*/}
 </>
     `)
 

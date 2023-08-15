@@ -61,8 +61,8 @@ export const evaluateJSX: EvaluateFunction<JSXNodeFunc[]> = (program: ESTree.Pro
     options.debug && console.time('JSX eval ');
     const nodes = fragment.children.map((child) => {
       switch (child.type) {
-        case 'JSXText': return new JSXNodeFunc((binding: any, ctx: JSXContext) => evalJSXChild(child, ctx, binding), 'Literal')
-        default: return new JSXNodeFunc((binding: any, ctx: JSXContext) => evalJSXChild(child, ctx, binding), 'Node')
+        case 'JSXText': return new JSXNodeFunc((ctx: JSXContext) => evalJSXChild(child, ctx), 'Literal')
+        default: return new JSXNodeFunc((ctx: JSXContext) => evalJSXChild(child, ctx), 'Node')
       }
     });
     return nodes;
