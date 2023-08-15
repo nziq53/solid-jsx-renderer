@@ -6,12 +6,12 @@ import { JSXContext } from './context';
 import { evalMethodDefinition } from './definition';
 import { JSXEvaluateError, wrapJSXError } from './error';
 import { bindFunction, evalFunction } from './function';
-import { JSX } from 'solid-js';
+import { JSX, createEffect } from 'solid-js';
 
 export const evalExpression = (exp: ESTree.Expression, context: JSXContext): any => {
   try {
-    console.log(exp)
-    console.log(context.stack.variables)
+    // console.log(exp)
+    // console.log(context.stack.variables)
 
     switch (exp.type) {
       case 'ArrayExpression':
@@ -260,10 +260,12 @@ export const evalIdentifier = (exp: ESTree.Identifier, context: JSXContext) => {
   } catch (e) {
     // console.log(e)
   }
-  if (context.binding[exp.name]) {
-    console.warn("ok")
+
+  if (context.binding[exp.name] !== undefined) {
+    console.warn(`load obj: ${exp.name}`)
     return context.binding[exp.name]
   }
+
   const variable = context.resolveIdentifier(exp.name);
   if (!variable) {
     if (context.options.raiseReferenceError) {

@@ -2,59 +2,141 @@ import { ESTree } from 'meriyah';
 import { JSXElement, JSXFragment, JSXLiteralFunc, JSXNode, JSXNodeFunc, JSXText } from '../types';
 import { isUnknownHTMLElementTagName } from './isUnknownElementTagName';
 import { RenderingOptions } from './options';
-import { For, Index, Match, Show, Switch, children, createEffect, createMemo, mergeProps, splitProps } from 'solid-js';
+import { For, Index, Match, Show, Switch, children, createEffect, createMemo, createSignal, mergeProps, splitProps } from 'solid-js';
 import { Dynamic } from "solid-js/web";
 import { AnyFunction, EvaluateOptions, JSXContext } from 'evaluate';
 
 const fileName = 'jsx';
 
+// export const RenderJSX = (props: { node: JSXNodeFunc | JSXNodeFunc[], options: RenderingOptions & EvaluateOptions, ctx: JSXContext }) => {
+//   // for (let k in props.options.binding) {
+//   //   props.ctx.setVariable(k, props.options.binding[k])
+//   // }
+//   let ctx_cpy = createMemo(() => {
+//     console.log("#######################memo update")
+//     let ctx = props.ctx
+//     for (let k in props.options.binding) {
+//       ctx.setVariable(k, props.options.binding[k])
+//     }
+//     return ctx
+//   })
+
+//   if (props.node === undefined) return undefined;
+//   if (props.node === null) return undefined;
+//   if (Array.isArray(props.node)) {
+//     return <For each={props.node}>{(node, _i) =>
+//       <RenderJSX node={node} options={props.options} ctx={props.ctx} />
+//     }</For>
+//   }
+
+//   // console.log("##")
+//   // console.log(props.node)
+//   // console.log(props.node.func(props.options.binding))
+//   // console.log("##")
+
+//   // return (
+//   //   <Switch>
+//   //     <Match when={Array.isArray(props.node)}>
+//   //       return <For each={props.node}>{(node, _i) =>
+//   //         <RenderJSX node={node()} options={props.options} />
+//   //       }</For>
+//   //     </Match>
+//   //     <Match when={typeof props.node() === 'boolean'}>
+//   //       <>{props.node(props.options.binding)}</>
+//   //     </Match>
+//   //     <Match when={typeof props.node() === 'string'} >
+//   //       return <RenderJSXText text={props.node()} options={props.options} />
+//   //     </Match>
+//   //   </Switch>
+//   // )
+//   // console.log(props.node)
+//   // console.log(props.node.func(props.options.binding))
+//   const tmp_func = (ctx: JSXContext): JSXNode => {
+//     console.log("$$$$$$$$$$$$$$$$$$$$$")
+//     return props.node.func(ctx)
+//   }
+
+//   if (props.node.type === 'Node') {
+//     return <>
+//       {/* <RenderJSXNode node={props.node.func(ctx_cpy()) as (JSXElement | JSXFragment)} options={props.options} ctx={ctx_cpy()} /> */}
+//       <RenderJSXNode node={tmp_func(ctx_cpy()) as (JSXElement | JSXFragment)} options={props.options} ctx={ctx_cpy()} />
+//     </>
+//   }
+//   // return <RenderJSXText text={(props.node as JSXLiteralFunc).func(ctx_cpy())} options={props.options} ctx={ctx_cpy()} />
+//   return <RenderJSXText text={tmp_func(ctx_cpy())} options={props.options} ctx={ctx_cpy()} />
+// };
+
 export const RenderJSX = (props: { node: JSXNodeFunc | JSXNodeFunc[], options: RenderingOptions & EvaluateOptions, ctx: JSXContext }) => {
   // for (let k in props.options.binding) {
   //   props.ctx.setVariable(k, props.options.binding[k])
   // }
-  let ctx_cpy = createMemo(() => {
+
+  const late_func = () => {
+    // console.log("#######################memo update")
     let ctx = props.ctx
     for (let k in props.options.binding) {
       ctx.setVariable(k, props.options.binding[k])
     }
+    ctx.bindingset(props.options.binding ?? {})
     return ctx
+  }
+  // let ctx_cpy = createMemo(late_func, late_func(), { equals: false })
+  let [ctx_cpy, set_ctx_cty] = createSignal(late_func(), { equals: false })
+
+  createEffect(() => {
+    // console.log("#######################memo update")
+    let ctx = props.ctx
+    for (let k in props.options.binding) {
+      ctx.setVariable(k, props.options.binding[k])
+    }
+    console.log(props.options.binding.time)
+    ctx.bindingset(props.options.binding ?? {})
+    set_ctx_cty(ctx)
   })
-  if (props.node === undefined) return undefined;
-  if (props.node === null) return undefined;
-  if (Array.isArray(props.node)) {
-    return <For each={props.node}>{(node, _i) =>
-      <RenderJSX node={node} options={props.options} ctx={props.ctx} />
-    }</For>
+
+  // if (props.node === undefined) return undefined;
+  // if (props.node === null) return undefined;
+  // if (Array.isArray(props.node)) {
+  //   return <For each={props.node}>{(node, _i) =>
+  //     <RenderJSX node={node} options={props.options} ctx={props.ctx} />
+  //   }</For>
+  // }
+
+  const tmp_func = (ctx: JSXContext): JSXNode => {
+    // console.log("$$$$$$$$$$$$$$$$$$$$$")
+    return props.node.func(ctx)
   }
 
-  // console.log("##")
-  // console.log(props.node)
-  // console.log(props.node.func(props.options.binding))
-  // console.log("##")
-
-  // return (
-  //   <Switch>
-  //     <Match when={Array.isArray(props.node)}>
-  //       return <For each={props.node}>{(node, _i) =>
-  //         <RenderJSX node={node()} options={props.options} />
-  //       }</For>
-  //     </Match>
-  //     <Match when={typeof props.node() === 'boolean'}>
-  //       <>{props.node(props.options.binding)}</>
-  //     </Match>
-  //     <Match when={typeof props.node() === 'string'} >
-  //       return <RenderJSXText text={props.node()} options={props.options} />
-  //     </Match>
-  //   </Switch>
-  // )
-  // console.log(props.node)
-  // console.log(props.node.func(props.options.binding))
-  if (props.node.type === 'Node') {
-    return <>
-      <RenderJSXNode node={props.node.func(ctx_cpy()) as (JSXElement | JSXFragment)} options={props.options} ctx={ctx_cpy()} />
+  return (
+    <>
+      {/* <div>{`${ctx_cpy().binding.time}`}</div> */}
+      {/* <div>{`${props.options.binding.time}`}</div> */}
+      <Switch>
+        <Match when={Array.isArray(props.node)}>
+          <For each={props.node as JSXNodeFunc[]}>{(node, _i) =>
+            <RenderJSX node={node} options={props.options} ctx={props.ctx} />
+          }</For>
+        </Match>
+        <Match when={!Array.isArray(props.node) && props.node.type === 'Node'}>
+          <RenderJSXNode node={tmp_func(ctx_cpy()) as (JSXElement | JSXFragment)} options={props.options} ctx={ctx_cpy()} />
+        </Match>
+        <Match when={!Array.isArray(props.node) && props.node.type === 'Literal'} >
+          <RenderJSXText text={tmp_func(ctx_cpy())} options={props.options} ctx={ctx_cpy()} />
+        </Match>
+      </Switch>
     </>
-  }
-  return <RenderJSXText text={(props.node as JSXLiteralFunc).func(ctx_cpy())} options={props.options} ctx={ctx_cpy()} />
+  )
+  // console.log(props.node)
+  // console.log(props.node.func(props.options.binding))
+
+  // if (props.node.type === 'Node') {
+  //   return <>
+  //     {/* <RenderJSXNode node={props.node.func(ctx_cpy()) as (JSXElement | JSXFragment)} options={props.options} ctx={ctx_cpy()} /> */}
+  //     <RenderJSXNode node={tmp_func(ctx_cpy()) as (JSXElement | JSXFragment)} options={props.options} ctx={ctx_cpy()} />
+  //   </>
+  // }
+  // // return <RenderJSXText text={(props.node as JSXLiteralFunc).func(ctx_cpy())} options={props.options} ctx={ctx_cpy()} />
+  // return <RenderJSXText text={tmp_func(ctx_cpy())} options={props.options} ctx={ctx_cpy()} />
 };
 
 const RenderJSXText = (props: { text: JSXText | boolean | undefined | null, options: RenderingOptions, ctx: JSXContext }) => {
@@ -150,7 +232,7 @@ const RenderJSXElement = (props: { element: JSXElement, options: RenderingOption
 
             let nnn = new JSXNodeFunc((ctx: JSXContext) => {
               let anyfunc: AnyFunction = filtered.children[0].func(ctx) as unknown as AnyFunction
-              console.log(for_child)
+              // console.log(for_child)
               let compo = anyfunc(for_child, for_i)
               // console.log(compo)
               // console.log(ctx.stack.variables)
@@ -179,24 +261,34 @@ const RenderJSXElement = (props: { element: JSXElement, options: RenderingOption
       if (filtered.component === 'Show') {
         // let [when, other_props] = splitProps(move_props, ['when'])
         let [when, other_props] = splitProps(props.element.props, ['when'])
+        // console.log("&&&&&&&&&&&&&&&&&&:")
         // console.log(when.when)
         // console.log(props.element.props.when)
 
-        // createEffect(() => {
-        //   console.log(props.options.binding.onetime())
-        // })
+        createEffect(() => {
+          console.dir(props.element.props)
+          // console.log(props.options.binding.onetime())
+        })
 
         // console.log(props.options.binding.onetime())
         return (
-          <Show when={when.when} {...other_props}>
-            <For each={filtered.children}>{(child, _i) =>
-              <RenderJSX node={child} options={props.options} ctx={props.ctx} />
-            }</For>
-          </Show>
+          <>
+            {/* <div>{`${props.options.binding.time}ffffffffffff`}</div> */}
+            {/* <div>{`${when.when}ffffffffffff`}</div> */}
+            <Show when={props.element.props.when} {...other_props}>
+              {/* <div>{`${props.element.props.when}ffffffffffff`}</div> */}
+              <For each={filtered.children}>{(child, _i) =>
+                <RenderJSX node={child} options={props.options} ctx={props.ctx} />
+              }</For>
+            </Show>
+          </>
         )
       }
     }
   }
+
+  console.log(`####: ${filtered.component}`)
+  console.log(filtered.component)
 
   return (
     <Dynamic component={filtered.component} {...move_props}>

@@ -95,7 +95,7 @@ const systemVariables = {
 export class JSXContext {
   public readonly options: EvaluateOptions;
   public readonly keyGenerator: KeyGenerator;
-  public readonly binding: Binding;
+  public binding: Binding;
   public readonly components: ComponentsBinding;
   public readonly allowedFunctions: AnyFunction[];
   public readonly deniedFunctions: AnyFunction[];
@@ -143,17 +143,10 @@ export class JSXContext {
     return this.stack ? this.stack.self : undefined;
   }
 
-  // public resolveIdentifier(name: string): Variable | undefined {
-  //   const v = this.stack.get(name)
-  //   if (v) {
-  //     if (typeof v.value === 'function') {
-  //       createEffect(() => {
-  //         console.log(`${name}: ${v.value()}`)
-  //       })
-  //     }
-  //   }
-  //   return v
-  // }
+  public bindingset(binding: Binding) {
+    this.binding = binding
+  }
+
   public resolveIdentifier(name: string): Variable | undefined {
     return this.stack.get(name);
   }

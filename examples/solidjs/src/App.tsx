@@ -49,8 +49,11 @@ function App(props: { time: boolean }) {
 <>
   <div>
     <Show when={time}>
+      4444
       <div>{test_func()}</div>
     </Show>
+    {/*<div>{\`22\${onetime() ? "##" : "$$$" }\`}</div>*/}
+    <div>{onetime()}</div>
     <p>code here: <a href="https://github.com/oligami-0424/solid-jsx-renderer" target="_blank" rel="noopener noreferrer">https://github.com/oligami-0424/solid-jsx-renderer</a></p>
     <p>This is a port of the react This is a port of the library of
       <a href="https://github.com/rosylilly/react-jsx-renderer" target="_blank" rel="noopener noreferrer">https://github.com/rosylilly/react-jsx-renderer</a></p>
@@ -81,7 +84,7 @@ function App(props: { time: boolean }) {
     </li>
   }}</Index>*/}
   <A href="/">link index</A>
-  <DisplayCats cats={cats()} />
+  <DisplayCats cats={(() => { let h = cats(); h.push({ id: ';lctybyf', name: 'tmp cat' }); return h })()} />
   <DisplayText text={inputText()} />
   {/*<TextInput value={inputText()} onChange={(e) => setInputText(e.target.value)} />*/}
 </>
@@ -98,9 +101,9 @@ function App(props: { time: boolean }) {
     setOnetime(true)
   }, 5000)
 
-  setTimeout(() => {
-    setCats([])
-  }, 3000)
+  // setTimeout(() => {
+  //   setCats([])
+  // }, 3000)
 
   // setTimeout(() => {
   //   setInputText("<></>")
