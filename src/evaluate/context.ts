@@ -2,7 +2,7 @@ import { ESTree } from 'meriyah';
 import { Binding, ComponentsBinding } from '../types/binding';
 import { AnyFunction, EvaluateOptions } from './options';
 import { createEffect } from 'solid-js';
-import { Accessor, createSignal, readSignal } from 'solid-js/types/reactive/signal';
+import { readSignal } from 'solid-js/types/reactive/signal';
 
 type VariableKind = ESTree.VariableDeclaration['kind'];
 
@@ -95,7 +95,7 @@ const systemVariables = {
 export class JSXContext {
   public readonly options: EvaluateOptions;
   public readonly keyGenerator: KeyGenerator;
-  public readonly binding: Accessor<Binding>;
+  public readonly binding: Binding;
   public readonly components: ComponentsBinding;
   public readonly allowedFunctions: AnyFunction[];
   public readonly deniedFunctions: AnyFunction[];
@@ -103,11 +103,11 @@ export class JSXContext {
 
   public stack: Stack;
 
-  constructor(options: EvaluateOptions, binding: Accessor<Binding>) {
+  constructor(options: EvaluateOptions) {
     this.options = options;
     this.keyGenerator = new KeyGenerator(options.keyPrefix);
 
-    this.binding = binding
+    this.binding = options.binding || {};
     this.components = options.components || {};
 
     this.allowedFunctions = [...(options.allowedFunctions || [])];

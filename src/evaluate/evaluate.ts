@@ -4,7 +4,7 @@ import { JSXContext } from './context';
 import { evalJSXChild } from './expression';
 import { EvaluateOptions, ParseOptions } from './options';
 import { evalProgram } from './program';
-import { createEffect, createMemo } from 'solid-js';
+import { createEffect } from 'solid-js';
 
 const meriyahForceOptions: Options = {
   module: true,
@@ -33,9 +33,7 @@ type EvaluateFunction<T> = {
 export const evaluate: EvaluateFunction<JSXContext> = (program: ESTree.Program | string, options: ParseOptions & EvaluateOptions = {}): JSXContext => {
   if (typeof program === 'string') program = parse(program, options);
 
-  const context = new JSXContext(options, createMemo(() => {
-    return options.binding ?? {}
-  }));
+  const context = new JSXContext(options);
   try {
     options.debug && console.time('JSX eval ');
     evalProgram(program, context);
