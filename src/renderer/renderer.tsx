@@ -98,7 +98,9 @@ const JSXRenderer = ((props: JSXRendererProps) => {
     }
   }, [thisprop.code, props.meriyah, props.debug, thisprop.component]);
 
-  const ctx = new JSXContext(options)
+  const ctx = new JSXContext(options, createMemo(() => {
+    return options.binding ?? {}
+  }));
 
   createEffect(() => {
     if (typeof thisprop.refNodes === 'function') thisprop.refNodes(nodes.map(node => node.func(ctx)));
