@@ -1,47 +1,82 @@
 import { ESTree } from 'meriyah';
-import { JSXElement, JSXFragment, JSXNode, JSXText } from '../types';
+import { JSXElement, JSXFragment, JSXLiteralFunc, JSXNode, JSXNodeFunc, JSXText } from '../types';
 import { isUnknownHTMLElementTagName } from './isUnknownElementTagName';
 import { RenderingOptions } from './options';
-import { For, Index, Show, children, createEffect, createMemo, mergeProps, splitProps } from 'solid-js';
+import { For, Index, Match, Show, Switch, children, createEffect, createMemo, mergeProps, splitProps } from 'solid-js';
 import { Dynamic } from "solid-js/web";
-import { AnyFunction, EvaluateOptions } from 'evaluate';
+import { AnyFunction, EvaluateOptions, JSXContext } from 'evaluate';
 
 const fileName = 'jsx';
 
-export const RenderJSX = (props: { node: JSXNode | JSXNode[], options: RenderingOptions }) => {
-  if (props.node === null) return undefined;
+export const RenderJSX = (props: { node: JSXNodeFunc | JSXNodeFunc[], options: RenderingOptions & EvaluateOptions, ctx: JSXContext }) => {
   if (props.node === undefined) return undefined;
+  if (props.node === null) return undefined;
   if (Array.isArray(props.node)) {
     return <For each={props.node}>{(node, _i) =>
-      <RenderJSX node={node} options={props.options} />
+      <RenderJSX node={node} options={props.options} ctx={props.ctx} />
     }</For>
   }
 
-  switch (typeof props.node) {
-    case 'boolean':
-      return <>props.node</>;
-    case 'string':
-    case 'number':
-      return <RenderJSXText text={props.node} options={props.options} />
-    default:
-      return <RenderJSXNode node={props.node} options={props.options} />
+  // console.log("##")
+  // console.log(props.node)
+  // console.log(props.node.func(props.options.binding))
+  // console.log("##")
+
+  // return (
+  //   <Switch>
+  //     <Match when={Array.isArray(props.node)}>
+  //       return <For each={props.node}>{(node, _i) =>
+  //         <RenderJSX node={node()} options={props.options} />
+  //       }</For>
+  //     </Match>
+  //     <Match when={typeof props.node() === 'boolean'}>
+  //       <>{props.node(props.options.binding)}</>
+  //     </Match>
+  //     <Match when={typeof props.node() === 'string'} >
+  //       return <RenderJSXText text={props.node()} options={props.options} />
+  //     </Match>
+  //   </Switch>
+  // )
+  // console.log(props.node)
+  // console.log(props.node.func(props.options.binding))
+  if (props.node.type === 'Node') {
+    return <RenderJSXNode node={props.node.func(props.options.binding, props.ctx) as (JSXElement | JSXFragment)} options={props.options} ctx={props.ctx} />
   }
+  return <RenderJSXText text={(props.node as JSXLiteralFunc).func(props.options.binding, props.ctx)} options={props.options} ctx={props.ctx} />
 };
 
-const RenderJSXText = (props: { text: JSXText, options: RenderingOptions }) => {
-  return applyFilter(props.options.textFilters || [], props.text);
+const RenderJSXText = (props: { text: JSXText | boolean | undefined | null, options: RenderingOptions, ctx: JSXContext }) => {
+  return (
+    <Switch>
+      <Match when={props.text === null || typeof props.text === 'undefined'}>
+      </Match>
+      <Match when={typeof props.text === 'boolean'}>
+        {props.text}
+      </Match>
+      <Match when={typeof props.text === 'string' || typeof props.text === 'number'}>
+        {applyFilter(props.options.textFilters || [], props.text as (string | number))}
+      </Match>
+    </Switch>
+  )
+  // if (props.text === null)
+  //   return undefined
+  // switch (typeof props.text) {
+  //   case 'boolean': return <>{props.text}</>
+  //   case 'undefined': return undefined
+  //   default: return applyFilter(props.options.textFilters || [], props.text);
+  // }
 };
 
-const RenderJSXNode = (props: { node: JSXElement | JSXFragment, options: RenderingOptions }) => {
+const RenderJSXNode = (props: { node: JSXElement | JSXFragment, options: RenderingOptions, ctx: JSXContext }) => {
   switch (props.node.type) {
     case 'element':
-      return <RenderJSXElement element={props.node} options={props.options} />;
+      return <RenderJSXElement element={props.node} options={props.options} ctx={props.ctx} />;
     case 'fragment':
-      return <RenderJSXFragment fragment={props.node} options={props.options} />
+      return <RenderJSXFragment fragment={props.node} options={props.options} ctx={props.ctx} />
   }
 };
 
-const RenderJSXElement = (props: { element: JSXElement, options: RenderingOptions }) => {
+const RenderJSXElement = (props: { element: JSXElement, options: RenderingOptions & EvaluateOptions, ctx: JSXContext }) => {
   const filtered = applyFilter(props.options.elementFilters ?? [], props.element);
 
   if (!filtered) return undefined;
@@ -86,12 +121,31 @@ const RenderJSXElement = (props: { element: JSXElement, options: RenderingOption
             //     throw new Error('why this is not function')
             //   }
 
-            if (typeof filtered.children[0] === 'function') {
-              // return <></>
-              return <RenderJSX node={(filtered.children[0] as AnyFunction)(for_child, for_i)} options={props.options} />
-            } else {
-              throw new Error('why this is not function')
-            }
+            // if (typeof filtered.children[0] === 'function') {
+            //   // return <></>
+            //   return <RenderJSX node={(filtered.children[0] as AnyFunction)(for_child, for_i)} options={props.options} />
+            // } else {
+            //   console.log(filtered.children[0])
+            //   return <></>
+            //   // throw new Error('why this is not function')
+            // }
+            // return <RenderJSX node={(filtered.children[0].func(props.options.binding) as AnyFunction)(for_child, for_i)} options={props.options} />
+            // let anyfunc: AnyFunction = filtered.children[0].func(props.options.binding) as unknown as AnyFunction
+            // console.log(anyfunc)
+            // let compo = anyfunc(for_child, for_i)
+            // console.log(compo)
+            let nnn = new JSXNodeFunc((binding: any, ctx: JSXContext) => {
+              let anyfunc: AnyFunction = filtered.children[0].func(binding, ctx) as unknown as AnyFunction
+              console.log(for_child)
+              let compo = anyfunc(for_child, for_i)
+              // console.log(compo)
+              // console.log(ctx.stack.variables)
+              // console.log(props.ctx.stack.variables)
+              return compo
+            }, 'Node')
+            // return <RenderJSX node={(filtered.children[0].func as AnyFunction)(for_child, for_i, props.options.binding)} options={props.options} />
+            // props.ctx.stack.set()
+            return <RenderJSX node={nnn} options={props.options} ctx={props.ctx} />
           }}</For>
         )
       }
@@ -100,9 +154,10 @@ const RenderJSXElement = (props: { element: JSXElement, options: RenderingOption
         return (
           <Index each={each.each} {...other_props}>{(index_child, index_i) => {
             if (typeof filtered.children[0] === 'function') {
-              return <RenderJSX node={(filtered.children[0] as AnyFunction)(index_child, index_i)} options={props.options} />
+              return <RenderJSX node={(filtered.children[0] as AnyFunction)(index_child, index_i)} options={props.options} ctx={props.ctx} />
             } else {
-              throw new Error('why this is not function')
+              return <></>
+              // throw new Error('why this is not function')
             }
           }}</Index>
         )
@@ -121,7 +176,7 @@ const RenderJSXElement = (props: { element: JSXElement, options: RenderingOption
         return (
           <Show when={when.when} {...other_props}>
             <For each={filtered.children}>{(child, _i) =>
-              <RenderJSX node={child} options={props.options} />
+              <RenderJSX node={child} options={props.options} ctx={props.ctx} />
             }</For>
           </Show>
         )
@@ -132,7 +187,7 @@ const RenderJSXElement = (props: { element: JSXElement, options: RenderingOption
   return (
     <Dynamic component={filtered.component} {...move_props}>
       <For each={filtered.children}>{(child, _i) =>
-        <RenderJSX node={child} options={props.options} />
+        <RenderJSX node={child} options={props.options} ctx={props.ctx} />
       }</For>
     </Dynamic>
   );
@@ -148,13 +203,13 @@ const RenderJSXElement = (props: { element: JSXElement, options: RenderingOption
   // );
 };
 
-const RenderJSXFragment = (props: { fragment: JSXFragment, options: RenderingOptions }) => {
+const RenderJSXFragment = (props: { fragment: JSXFragment, options: RenderingOptions, ctx: JSXContext }) => {
   const filtered = applyFilter(props.options.fragmentFilters || [], props.fragment);
 
   if (filtered) {
     return (
       <For each={filtered.children}>{(child, _i) =>
-        <RenderJSX node={child} options={props.options} />
+        <RenderJSX node={child} options={props.options} ctx={props.ctx} />
       }</For>
     )
   } else {

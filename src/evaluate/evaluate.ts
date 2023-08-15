@@ -1,5 +1,5 @@
 import { ESTree, Options, parseModule } from 'meriyah';
-import { JSXNode } from '../types/node';
+import { JSXNode, JSXNodeFunc } from '../types/node';
 import { JSXContext } from './context';
 import { evalJSXChild } from './expression';
 import { EvaluateOptions, ParseOptions } from './options';
@@ -43,7 +43,7 @@ export const evaluate: EvaluateFunction<JSXContext> = (program: ESTree.Program |
   }
 };
 
-export const evaluateJSX: EvaluateFunction<JSXNode[]> = (program: ESTree.Program | string, options: ParseOptions & EvaluateOptions = {}): JSXNode[] => {
+export const evaluateJSX: EvaluateFunction<JSXNodeFunc[]> = (program: ESTree.Program | string, options: ParseOptions & EvaluateOptions = {}): JSXNodeFunc[] => {
 
   if (typeof program === 'string') program = parse(program, { ...options, forceExpression: true });
 
@@ -57,11 +57,14 @@ export const evaluateJSX: EvaluateFunction<JSXNode[]> = (program: ESTree.Program
     return [];
   }
 
-  const context = new JSXContext(options);
-
   try {
     options.debug && console.time('JSX eval ');
-    const nodes = fragment.children.map((child) => evalJSXChild(child, context));
+    const nodes = fragment.children.map((child) => {
+      switch (child.type) {
+        case 'JSXText': return new JSXNodeFunc((binding: any, ctx: JSXContext) => evalJSXChild(child, ctx, binding), 'Literal')
+        default: return new JSXNodeFunc((binding: any, ctx: JSXContext) => evalJSXChild(child, ctx, binding), 'Node')
+      }
+    });
     return nodes;
   } finally {
     options.debug && console.timeEnd('JSX eval ');

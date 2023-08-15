@@ -41,16 +41,16 @@ export interface MemberBinding {
 
 export type Binding = IdentifierBinding | ObjectBinding | ArrayBinding | RestBinding | MemberBinding;
 
-export const evalBindingPattern = (bind: ESTree.BindingPattern | ESTree.AssignmentPattern | ESTree.Expression, context: JSXContext): Binding => {
+export const evalBindingPattern = (bind: ESTree.BindingPattern | ESTree.AssignmentPattern | ESTree.Expression, context: JSXContext, binding: any): Binding => {
   switch (bind.type) {
     case 'Identifier':
       return evalIdentifierBinding(bind, context);
     case 'AssignmentPattern':
-      return evalAssignmentPattern(bind, context);
+      return evalAssignmentPattern(bind, context, binding);
     case 'MemberExpression':
-      return evalMemberBinding(bind, context);
+      return evalMemberBinding(bind, context, binding);
     default:
-      return evalExpression(bind, context);
+      return evalExpression(bind, context, binding);
   }
 };
 
@@ -61,7 +61,7 @@ export const evalIdentifierBinding = (bind: ESTree.Identifier, _: JSXContext): I
   };
 };
 
-export const evalObjectPattern = (bind: ESTree.ObjectPattern, context: JSXContext): ObjectBinding => {
+export const evalObjectPattern = (bind: ESTree.ObjectPattern, context: JSXContext, propbinding: any): ObjectBinding => {
   const binding: ObjectBinding = {
     type: 'Object',
     binds: {},
@@ -71,13 +71,13 @@ export const evalObjectPattern = (bind: ESTree.ObjectPattern, context: JSXContex
   bind.properties.forEach((prop) => {
     switch (prop.type) {
       case 'Property': {
-        const key = prop.key.type === 'Identifier' ? prop.key.name : evalExpression(prop.key, context);
-        const val = evalBindingPattern(prop.value, context);
+        const key = prop.key.type === 'Identifier' ? prop.key.name : evalExpression(prop.key, context, propbinding);
+        const val = evalBindingPattern(prop.value, context, propbinding);
         binding.binds[key] = val;
         break;
       }
       case 'RestElement': {
-        binding.rest = evalRestElement(prop, context);
+        binding.rest = evalRestElement(prop, context, propbinding);
       }
     }
   });
@@ -100,37 +100,37 @@ export const evalArrayPattern = (bind: ESTree.ArrayPattern, context: JSXContext)
 
     switch (element.type) {
       case 'RestElement':
-        binding.rest = evalRestElement(element, context);
+        binding.rest = evalRestElement(element, context, binding);
         break;
       default:
-        binding.binds.push(evalBindingPattern(element, context));
+        binding.binds.push(evalBindingPattern(element, context, binding));
     }
   });
 
   return binding;
 };
 
-export const evalAssignmentPattern = (bind: ESTree.AssignmentPattern, context: JSXContext) => {
-  const binding = evalBindingPattern(bind.left, context);
-  binding.default = bind.right ? evalExpression(bind.right, context) : undefined;
+export const evalAssignmentPattern = (bind: ESTree.AssignmentPattern, context: JSXContext, propbinding: any) => {
+  const binding = evalBindingPattern(bind.left, context, propbinding);
+  binding.default = bind.right ? evalExpression(bind.right, context, propbinding) : undefined;
   return binding;
 };
 
-export const evalRestElement = (bind: ESTree.RestElement, context: JSXContext): RestBinding => {
+export const evalRestElement = (bind: ESTree.RestElement, context: JSXContext, binding: any): RestBinding => {
   return {
     type: 'Rest',
-    bind: evalBindingPattern(bind.argument, context),
+    bind: evalBindingPattern(bind.argument, context, binding),
     default: undefined,
   };
 };
 
-export const evalMemberBinding = (bind: ESTree.MemberExpression, context: JSXContext): MemberBinding => {
+export const evalMemberBinding = (bind: ESTree.MemberExpression, context: JSXContext, binding: any): MemberBinding => {
   const property =
-    bind.property.type === 'Identifier' ? bind.property.name : bind.property.type === 'PrivateIdentifier' ? bind.property.name : evalExpression(bind.property, context);
+    bind.property.type === 'Identifier' ? bind.property.name : bind.property.type === 'PrivateIdentifier' ? bind.property.name : evalExpression(bind.property, context, binding);
 
   return {
     type: 'Member',
-    object: evalExpression(bind.object, context),
+    object: evalExpression(bind.object, context, binding),
     property,
   };
 };

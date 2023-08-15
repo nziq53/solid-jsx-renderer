@@ -1,6 +1,6 @@
 import { ESTree } from 'meriyah';
-import { evaluate, evaluateJSX, EvaluateOptions, parse, ParseOptions } from '../evaluate';
-import { JSXNode } from '../types';
+import { evaluate, evaluateJSX, EvaluateOptions, JSXContext, parse, ParseOptions } from '../evaluate';
+import { JSXNode, JSXNodeFunc } from '../types';
 import { RenderingOptions } from './options';
 import { RenderJSX } from './render';
 import { Accessor, createContext, createEffect, createMemo, createSignal, For, JSX, mergeProps, on, Ref, Show, splitProps, useContext } from 'solid-js';
@@ -11,17 +11,17 @@ export interface JSXNodeRendererProps extends RenderingOptions {
   /**
    * JSX nodes
    */
-  nodes: JSXNode[];
+  nodes: JSXNodeFunc[];
 }
 
-const JSXNodeRenderer = (props: JSXNodeRendererProps) => {
+const JSXNodeRenderer = (props: JSXNodeRendererProps & { ctx: JSXContext }) => {
 
   const contextOptions = useContext(JSXRendererContext);
   const [nodes, options] = splitProps(mergeProps(contextOptions, props), ['nodes']);
 
   return <>
     <For each={nodes.nodes}>{(node, _i) =>
-      <RenderJSX node={node} options={options} />
+      <RenderJSX node={node} options={options} ctx={props.ctx} />
     }</For>
   </>;
 };
@@ -66,6 +66,7 @@ const DefaultJSXFallbackComponent: JSXFallbackComponent = (props: { error?: any;
 };
 
 const JSXRenderer = ((props: JSXRendererProps) => {
+
   let contextOptions = useContext(JSXRendererContext);
   // if (!props.disableSolidJSComponents) {
   //   contextOptions = mergeProps(contextOptions, {
@@ -95,19 +96,21 @@ const JSXRenderer = ((props: JSXRendererProps) => {
     }
   }, [thisprop.code, props.meriyah, props.debug, thisprop.component]);
 
+  const ctx = new JSXContext(options)
+
   createEffect(() => {
-    if (typeof thisprop.refNodes === 'function') thisprop.refNodes(nodes);
+    if (typeof thisprop.refNodes === 'function') thisprop.refNodes(nodes.map(node => node.func(options.binding, ctx)));
   });
 
   const programToNodes = (prog: {
     program?: ESTree.Program;
     error?: Error;
-  }): JSXNode[] | undefined => {
+  }): JSXNodeFunc[] | undefined => {
     if (prog.program) {
       if (thisprop.component) {
         const context = evaluate(prog.program, options);
         if (typeof context.exports[thisprop.component] === 'function') {
-          return [{ type: 'element', component: context.exports[thisprop.component], props: thisprop.componentProps || {}, children: [] }]
+          return [new JSXNodeFunc((_binding: any, _ctx: JSXContext) => { return { type: 'element', component: context.exports[thisprop.component!], props: thisprop.componentProps || {}, children: [] } }, 'Node')]
         } else {
           return []
         }
@@ -129,7 +132,7 @@ const JSXRenderer = ((props: JSXRendererProps) => {
 
   return (
     <>
-      <JSXNodeRenderer {...options} nodes={nodes} />
+      <JSXNodeRenderer {...options} nodes={nodes} ctx={ctx} />
       <Show when={program().error}>
         <Dynamic component={Fallback()} {...props} error={program().error} />
       </Show>

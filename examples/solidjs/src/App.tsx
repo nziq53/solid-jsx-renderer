@@ -50,7 +50,6 @@ function App(props: { time: boolean }) {
   <div>
     <div>{test_func()}</div>
     <Show when={true}>
-      \`5000ms after show: \{(() => {return onetime()})()}\`
     </Show>
     <p>code here: <a href="https://github.com/oligami-0424/solid-jsx-renderer" target="_blank" rel="noopener noreferrer">https://github.com/oligami-0424/solid-jsx-renderer</a></p>
     <p>This is a port of the react This is a port of the library of
@@ -115,7 +114,7 @@ function App(props: { time: boolean }) {
 
   return (
     <>
-      <DisplayCats cats={cats()} />
+      {/* <DisplayCats cats={cats()} /> */}
       <JSXRenderer
         binding={{
           console,

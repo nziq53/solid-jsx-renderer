@@ -113,7 +113,7 @@ export class JSXContext {
     this.allowedFunctions = [...(options.allowedFunctions || [])];
     this.deniedFunctions = [...(options.deniedFunctions || [])];
 
-    this.stack = new Stack(new Stack(undefined, undefined, systemVariables), undefined, this.binding);
+    this.stack = new Stack(new Stack(undefined, undefined, systemVariables), undefined, {});
     this.exports = {};
   }
 
@@ -143,20 +143,20 @@ export class JSXContext {
     return this.stack ? this.stack.self : undefined;
   }
 
-  public resolveIdentifier(name: string): Variable | undefined {
-    const v = this.stack.get(name)
-    // if (v) {
-    //   if (typeof v.value === 'function') {
-    //     createEffect(() => {
-    //       console.log(`${name}: ${v.value()}`)
-    //     })
-    //   }
-    // }
-    return v
-  }
   // public resolveIdentifier(name: string): Variable | undefined {
-  //   return this.stack.get(name);
+  //   const v = this.stack.get(name)
+  //   if (v) {
+  //     if (typeof v.value === 'function') {
+  //       createEffect(() => {
+  //         console.log(`${name}: ${v.value()}`)
+  //       })
+  //     }
+  //   }
+  //   return v
   // }
+  public resolveIdentifier(name: string): Variable | undefined {
+    return this.stack.get(name);
+  }
 
   public resolveComponent(name: string): any {
     const component = this.resolveIdentifier(name);
