@@ -3,8 +3,9 @@ import { evaluate, evaluateJSX, EvaluateOptions, parse, ParseOptions } from '../
 import { JSXNode } from '../types';
 import { RenderingOptions } from './options';
 import { RenderJSX } from './render';
-import { Accessor, createContext, createEffect, createMemo, For, JSX, mergeProps, on, Ref, Show, splitProps, useContext } from 'solid-js';
+import { Accessor, createContext, createEffect, createMemo, createSignal, For, JSX, mergeProps, on, Ref, Show, splitProps, useContext } from 'solid-js';
 import { createStore, reconcile } from 'solid-js/store';
+import { Dynamic } from 'solid-js/web';
 
 export interface JSXNodeRendererProps extends RenderingOptions {
   /**
@@ -73,8 +74,9 @@ const JSXRenderer = ((props: JSXRendererProps) => {
   //     }
   //   })
   // }
+
   const [thisprop, options] = splitProps(mergeProps(contextOptions, props), ['code', 'fallbackComponent', 'refNodes', 'component', 'componentProps'])
-  const Fallback = thisprop.fallbackComponent ? thisprop.fallbackComponent : DefaultJSXFallbackComponent;
+  let Fallback = () => thisprop.fallbackComponent ?? DefaultJSXFallbackComponent;
 
   props.debug && console.group('JSXRenderer');
 
@@ -118,7 +120,7 @@ const JSXRenderer = ((props: JSXRendererProps) => {
 
   const [nodes, setNodes] = createStore(programToNodes(program()) ?? [])
 
-  createEffect(on(program, (program) => {
+  createEffect(on([program], ([program]) => {
     let nodes_ret = programToNodes(program)
     if (nodes_ret) setNodes(reconcile(nodes_ret))
   }))
@@ -129,7 +131,7 @@ const JSXRenderer = ((props: JSXRendererProps) => {
     <>
       <JSXNodeRenderer {...options} nodes={nodes} />
       <Show when={program().error}>
-        <Fallback {...props} error={program().error} />
+        <Dynamic component={Fallback()} {...props} error={program().error} />
       </Show>
     </>
   )

@@ -1,6 +1,8 @@
 import { ESTree } from 'meriyah';
 import { Binding, ComponentsBinding } from '../types/binding';
 import { AnyFunction, EvaluateOptions } from './options';
+import { createEffect } from 'solid-js';
+import { readSignal } from 'solid-js/types/reactive/signal';
 
 type VariableKind = ESTree.VariableDeclaration['kind'];
 
@@ -142,8 +144,19 @@ export class JSXContext {
   }
 
   public resolveIdentifier(name: string): Variable | undefined {
-    return this.stack.get(name);
+    const v = this.stack.get(name)
+    // if (v) {
+    //   if (typeof v.value === 'function') {
+    //     createEffect(() => {
+    //       console.log(`${name}: ${v.value()}`)
+    //     })
+    //   }
+    // }
+    return v
   }
+  // public resolveIdentifier(name: string): Variable | undefined {
+  //   return this.stack.get(name);
+  // }
 
   public resolveComponent(name: string): any {
     const component = this.resolveIdentifier(name);

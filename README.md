@@ -27,7 +27,12 @@ It has a JavaScript Runtime inside, and can execute the user's JSX with controll
   - binding Component which has binding props is also ssr on internal
   - `<textarea value={signal()}>` is not ssr on solid-start. You should use `<textarea>{signal()}</textarea>`
 - [x] Update only what is updated.
-- [ ] can use Show, For, Index... (only SolidJS Component)
+- [ ] can use Show, For, Index ... (only SolidJS Component)
+  - A is now enable (Confirmed)
+  - For, Index, Show is now able (Special)
+  - others (not confirmed)
+- [ ] can style property
+  `<div style={{}} />`
 
 If there is a feature you want, please contact us at issue
 
@@ -52,3 +57,11 @@ See here for detailed instructions.
 
 disableKeyGeneration:
   This doesn't make any sense, so it would be lighter to turn it off.
+
+disableSolidJSComponents: 
+  disbale <For />, <Index />, <Show />
+
+
+## !!
+
+- ContextProviderで囲って値を渡したときはリアクティブではありません

@@ -2,7 +2,7 @@ import { ESTree } from 'meriyah';
 import { JSXElement, JSXFragment, JSXNode, JSXText } from '../types';
 import { isUnknownHTMLElementTagName } from './isUnknownElementTagName';
 import { RenderingOptions } from './options';
-import { For, children, createMemo, mergeProps, splitProps } from 'solid-js';
+import { For, Index, Show, children, createEffect, createMemo, mergeProps, splitProps } from 'solid-js';
 import { Dynamic } from "solid-js/web";
 import { AnyFunction, EvaluateOptions } from 'evaluate';
 
@@ -43,6 +43,7 @@ const RenderJSXNode = (props: { node: JSXElement | JSXFragment, options: Renderi
 
 const RenderJSXElement = (props: { element: JSXElement, options: RenderingOptions }) => {
   const filtered = applyFilter(props.options.elementFilters ?? [], props.element);
+
   if (!filtered) return undefined;
 
   if (props.options.disableUnknownHTMLElement && typeof filtered.component === 'string') {
@@ -68,77 +69,83 @@ const RenderJSXElement = (props: { element: JSXElement, options: RenderingOption
   let move_props = mergeProps(filtered.props, renderSourcePosition(props.element.loc, props.options))
 
   // SolidJS実装
-  if (typeof filtered.component === 'string') {
-    // SolidJSのFor実装
-    if (filtered.component === 'For') {
-      // for (let item of filtered.children) {
-      //   console.log(item)
-      //   if (typeof item === 'function') {
-      //     console.log((item as AnyFunction)())
-      //   }
-      // }
-      // return (
-      //   <For each={filtered.children}>{(child, _i) =>
-      //     <RenderJSX node={child} options={props.options} />
-      //   }</For>
-      // )
-      // console.log(props.element.props.each)
-      // console.log(filtered.children[0]())
-      // console.log(filtered.children)
+  if (!(props.options as EvaluateOptions).disableSolidJSComponents) {
+    if (typeof filtered.component === 'string') {
+      // SolidJSのFor実装
+      if (filtered.component === 'For') {
+        let [each, other_props] = splitProps(move_props, ['each'])
+        return (
+          <For each={each.each} {...other_props}>{(for_child, for_i) => {
+            // return <For each={filtered.children} {...other_props}>{(child, _i) => {
+            //   // 何回も呼ばれる。パフォーマンス注意
+            //   // console.log("#")
+            //   if (typeof child === 'function') {
+            //     // return <></>
+            //     return <RenderJSX node={(child as AnyFunction)(for_child, for_i)} options={props.options} />
+            //   } else {
+            //     throw new Error('why this is not function')
+            //   }
 
-
-      let [_each, other_props] = splitProps(move_props, ['each'])
-      console.log(_each.each)
-      // return (
-      //   <For each={filtered.children} {...other_props}>{(child, _i) => {
-      //     if (typeof child === 'function') {
-      //       console.log((child as AnyFunction)())
-      //       return (
-      //         <>
-      //           <div>item</div>
-      //           <RenderJSX node={(child as AnyFunction)()} options={props.options} />
-      //         </>
-      //       )
-      //     } else {
-      //       throw new Error('why')
-      //     }
-      //   }}</For >
-      // )
-      return (
-        <For each={_each.each} >{(for_child, for_i) => {
-          return <For each={filtered.children} {...other_props}>{(child, _i) => {
-            if (typeof child === 'function') {
-              // let options: RenderingOptions & EvaluateOptions = props.options
-              // options.binding ??= {}
-              // options.binding['cat'] = for_child
-              console.log((child as AnyFunction)(for_child, for_i))
-              return <RenderJSX node={(child as AnyFunction)(for_child, for_i)} options={props.options} />
+            if (typeof filtered.children[0] === 'function') {
+              // return <></>
+              return <RenderJSX node={(filtered.children[0] as AnyFunction)(for_child, for_i)} options={props.options} />
             } else {
-              throw new Error('why')
+              throw new Error('why this is not function')
             }
-          }}</For >
-        }}</For>
-      )
+          }}</For>
+        )
+      }
+      if (filtered.component === 'Index') {
+        let [each, other_props] = splitProps(move_props, ['each'])
+        return (
+          <Index each={each.each} {...other_props}>{(index_child, index_i) => {
+            if (typeof filtered.children[0] === 'function') {
+              return <RenderJSX node={(filtered.children[0] as AnyFunction)(index_child, index_i)} options={props.options} />
+            } else {
+              throw new Error('why this is not function')
+            }
+          }}</Index>
+        )
+      }
+      if (filtered.component === 'Show') {
+        // let [when, other_props] = splitProps(move_props, ['when'])
+        let [when, other_props] = splitProps(props.element.props, ['when'])
+        // console.log(when.when)
+        // console.log(props.element.props.when)
+
+        // createEffect(() => {
+        //   console.log(props.options.binding.onetime())
+        // })
+
+        // console.log(props.options.binding.onetime())
+        return (
+          <Show when={when.when} {...other_props}>
+            <For each={filtered.children}>{(child, _i) =>
+              <RenderJSX node={child} options={props.options} />
+            }</For>
+          </Show>
+        )
+      }
     }
   }
 
-  // return (
-  //   <Dynamic component={filtered.component} {...move_props}>
-  //     <For each={filtered.children}>{(child, _i) =>
-  //       <RenderJSX node={child} options={props.options} />
-  //     }</For>
-  //   </Dynamic>
-  // );
   return (
     <Dynamic component={filtered.component} {...move_props}>
-      <For each={filtered.children}>{(child, _i) => {
-        // console.log("###############")
-        // console.log(child)
-        // console.log("###############")
-        return <RenderJSX node={child} options={props.options} />
-      }}</For>
+      <For each={filtered.children}>{(child, _i) =>
+        <RenderJSX node={child} options={props.options} />
+      }</For>
     </Dynamic>
   );
+  // return (
+  //   <Dynamic component={filtered.component} {...move_props}>
+  //     <For each={filtered.children}>{(child, _i) => {
+  //       // console.log("###############")
+  //       // console.log(child)
+  //       // console.log("###############")
+  //       return <RenderJSX node={child} options={props.options} />
+  //     }}</For>
+  //   </Dynamic>
+  // );
 };
 
 const RenderJSXFragment = (props: { fragment: JSXFragment, options: RenderingOptions }) => {

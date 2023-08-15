@@ -4,6 +4,7 @@ import { JSXContext } from './context';
 import { evalJSXChild } from './expression';
 import { EvaluateOptions, ParseOptions } from './options';
 import { evalProgram } from './program';
+import { createEffect } from 'solid-js';
 
 const meriyahForceOptions: Options = {
   module: true,
@@ -43,6 +44,7 @@ export const evaluate: EvaluateFunction<JSXContext> = (program: ESTree.Program |
 };
 
 export const evaluateJSX: EvaluateFunction<JSXNode[]> = (program: ESTree.Program | string, options: ParseOptions & EvaluateOptions = {}): JSXNode[] => {
+
   if (typeof program === 'string') program = parse(program, { ...options, forceExpression: true });
 
   const [fragmentExpression] = program.body;

@@ -494,6 +494,7 @@ export const evalJSXElement = (jsx: ESTree.JSXElement, context: JSXContext): JSX
   const { openingElement } = jsx;
   const [component, properties] = evalExpression(openingElement, context);
   const children = jsx.children.map((child) => evalJSXChild(child, context));
+  console.log(children)
 
   jsx.closingElement && evalExpression(jsx.closingElement, context);
 

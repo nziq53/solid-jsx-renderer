@@ -1,6 +1,6 @@
 import './App.css'
 import { JSXRenderer } from '../../../src/index'
-import { For as ForSolid, Accessor, JSX, createSignal } from 'solid-js';
+import { Accessor, For, JSX, Show, createSignal } from 'solid-js';
 
 // テキスト入力用のコンポーネント
 function TextInput(props: { value: string, onChange: (e: any) => any }) {
@@ -30,10 +30,28 @@ function DisplayText(props: { text: string }) {
   );
 }
 
-function App() {
+// リアルタイム表示用のコンポーネント
+function DisplayCats(props: { cats: { id: string, name: string }[] }) {
+  return (
+    <For each={props.cats}>{(cat, i) => {
+      // console.log("###")
+      return <li>
+        <a target="_blank" href={`https://www.youtube.com/watch?v=${cat.id}`}>
+          {i() + 1}: {cat.name}
+        </a>
+      </li>
+    }}</For>
+  );
+}
+
+function App(props: { time: boolean }) {
   const [inputText, setInputText] = createSignal(`
 <>
   <div>
+    <div>{test_func()}</div>
+    <Show when={true}>
+      \`5000ms after show: \{(() => {return onetime()})()}\`
+    </Show>
     <p>code here: <a href="https://github.com/oligami-0424/solid-jsx-renderer" target="_blank" rel="noopener noreferrer">https://github.com/oligami-0424/solid-jsx-renderer</a></p>
     <p>This is a port of the react This is a port of the library of
       <a href="https://github.com/rosylilly/react-jsx-renderer" target="_blank" rel="noopener noreferrer">https://github.com/rosylilly/react-jsx-renderer</a></p>
@@ -44,85 +62,104 @@ function App() {
     <p>author oligami</p>
   </div>
   <br/>
-  <For each={cats()}>{(cat, i) =>
-    <div>{cat.name}</div>
-  }</For>
-  <For each={cats()}>{(cat, i) =>
-    <li>
+  <strong class='strong-text'>
+    <div>Let's rewrite!</div>
+  </strong>
+  <TextInput value={inputText()} onChange={(e) => setInputText(e.target.value)} />
+  <For each={cats()}>{(cat, i) => {
+    // console.log("###")
+    return <li>
       <a target="_blank" href={\`https://www.youtube.com/watch?v=\${cat.id}\`}>
         {i() + 1}: {cat.name}
       </a>
     </li>
-  }</For>
-  <strong class='strong-text'>
-  <div>Let's rewrite!</div>
-  </strong>
-  <TextInput value={inputText()} onChange={(e) => setInputText(e.target.value)} />
+  }}</For>
+  <Index each={cats()}>{(cat, i) => {
+  // console.log("###")
+    return <li>
+      <a target="_blank" href={\`https://www.youtube.com/watch?v=\${cat.id}\`}>
+        {i + 1}: {cat().name}
+      </a>
+    </li>
+  }}</Index >
+  <A href="/">link index</A>
+  <DisplayCats cats={cats()} />
   <DisplayText text={inputText()} />
-</>  
+</>
     `)
 
-  // const [cats, setCats] = createSignal([
-  //   { id: 'J---aiyznGQ', name: 'Keyboard Cat' },
-  //   { id: 'z_AbfPXTKms', name: 'Maru' },
-  //   { id: 'OUtn3pvWmpg', name: 'Henri The Existential Cat' }
-  // ]);
+  const [cats, setCats] = createSignal([
+    { id: 'J---aiyznGQ', name: 'Keyboard Cat' },
+    { id: 'z_AbfPXTKms', name: 'Maru' },
+    { id: 'OUtn3pvWmpg', name: 'Henri The Existential Cat' }
+  ]);
 
-  const cats = () => {
-    // console.log("###")
-    return [
-      { id: 'J---aiyznGQ', name: 'Keyboard Cat' },
-      { id: 'z_AbfPXTKms', name: 'Maru' },
-      { id: 'OUtn3pvWmpg', name: 'Henri The Existential Cat' }
-    ]
-  }
+  const [onetime, setOnetime] = createSignal(false)
+  setTimeout(() => {
+    setOnetime(true)
+  }, 5000)
+
+  setTimeout(() => {
+    setCats([])
+  }, 3000)
+
+  // setTimeout(() => {
+  //   setInputText("<></>")
+  // }, 10000)
+
+  const [disableSolidJSComponents, setdisableSolidJSComponents] = createSignal(false)
+
+  setTimeout(() => {
+    setdisableSolidJSComponents(true)
+  }, 3000)
 
   return (
     <>
-      <For each={cats()}>{(cat, i) =>
-        <div>{cat.name}</div>
-      }</For>
-      <For each={cats()}>{(cat, i) =>
-        <li>
-          <a target="_blank" href={`https://www.youtube.com/watch?v=${cat.id}`}>
-            {i() + 1}: {cat.name}
-          </a>
-        </li>
-      }</For>
+      <DisplayCats cats={cats()} />
       <JSXRenderer
         binding={{
           console,
           inputText,
           setInputText,
-          TextInput,
           cats,
-          // For,
+          setCats,
+          onetime,
+          test_func,
+          time: props.time,
+          // Show
         }}
-        components={{ DisplayText: DisplayText }}
+        components={{ DisplayText, DisplayCats, TextInput }}
         disableKeyGeneration
-        code={inputText()}
+        code={`${inputText()}`}
+        disableSolidJSComponents={disableSolidJSComponents()}
+        debug
       />
     </>
   )
 }
 
-export default App
+export default function WrapApp() {
+  const [onetime, setOnetime] = createSignal(false)
+  setTimeout(() => {
+    setOnetime(true)
+  }, 10000)
 
-function For<T extends readonly any[], U extends JSX.Element>(props: {
-  each: T | undefined | null | false;
-  fallback?: JSX.Element;
-  children: (item: T[number], index: Accessor<number>) => U;
-}): JSX.Element {
-  // if (props.each)
-  //   for (let item of props.each) {
-  //     console.log(item)
-  //   }
-  // console.log(props.children)
-  return <ForSolid {...props} >{props.children}</ForSolid>
+  return <App time={onetime()} />
 }
 
-const tmp = `
-<For each={cats()}>{(cat, i) =>
-  <div>qqq</div>
-}</For>
-`
+// function Show<T, TRenderFunction extends (item: Accessor<NonNullable<T>>) => JSX.Element>(props: {
+//   when: T | undefined | null | false;
+//   keyed?: false;
+//   fallback?: JSX.Element;
+//   children: JSX.Element;
+// }) {
+//   console.log("#######")
+//   return <ShowAs when={props.when}>
+//     {props.children}
+//   </ShowAs>
+// }
+
+const test_func = () => {
+  // console.log("test_func")
+  return "test_func"
+}

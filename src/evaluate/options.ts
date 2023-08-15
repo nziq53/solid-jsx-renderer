@@ -78,6 +78,7 @@ export interface EvaluateOptions extends Options {
 
   /**
    * Binding SolidJS Components
+   * disable: For, Index
    */
   disableSolidJSComponents?: boolean;
 }
